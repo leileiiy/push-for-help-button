@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Help Desk</title>
+<style>
+  /* ── PASTE YOUR SUPABASE DETAILS IN THE SCRIPT BELOW ── */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #5a5955;
+    --text3: #9a9890;
+    --blue: #185fa5;
+    --blue-bg: #e6f1fb;
+    --blue-text: #0c447c;
+    --green: #1d9e75;
+    --green-bg: #e1f5ee;
+    --green-text: #085041;
+    --red: #e24b4a;
+    --red-bg: #fcebeb;
+    --red-text: #791f1f;
+    --amber: #ba7517;
+    --amber-bg: #faeeda;
+    --amber-text: #633806;
+    --radius: 10px;
+    --radius-lg: 14px;
+    font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+  body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Setup banner */
+  #setup-banner {
+    background: var(--amber-bg);
+    border-bottom: 1px solid var(--amber);
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--amber-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #setup-banner a { color: var(--amber-text); font-weight: 600; }
+  #setup-banner.hidden { display: none; }
+
+  /* Header */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo { font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+
+  /* Tab bar */
+  .tabs { display: flex; gap: 4px; }
+  .tab-btn {
+    padding: 6px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab-btn.active {
+    background: var(--surface2);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+  .tab-btn:hover:not(.active) { background: var(--surface2); }
+
+  /* Views */
+  .view { display: none; padding: 28px 24px; max-width: 640px; margin: 0 auto; }
+  .view.active { display: block; }
+
+  /* ── CLASSROOM VIEW ── */
+  .room-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .room-row select {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .help-trigger {
+    width: 100%;
+    padding: 28px 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    transition: border-color .15s, background .15s;
+  }
+  .help-trigger:hover { border-color: var(--blue); background: var(--blue-bg); }
+  .help-trigger .big-icon { font-size: 36px; line-height: 1; }
+  .help-trigger .label { font-size: 17px; font-weight: 600; color: var(--text); }
+  .help-trigger .sub { font-size: 13px; color: var(--text2); }
+
+  .quick-panel { display: none; margin-bottom: 16px; }
+  .quick-panel.open { display: block; }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .quick-item {
+    padding: 12px 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color .12s, background .12s;
+  }
+  .quick-item:hover { border-color: var(--blue); background: var(--blue-bg); color: var(--blue-text); }
+  .quick-item .qi { font-size: 18px; }
+
+  .custom-row { display: flex; gap: 8px; }
+  .custom-row input {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .12s;
+  }
+  .custom-row input:focus { border-color: var(--blue); }
+  .asap-toggle {
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: 1.5px dashed var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .asap-toggle span { flex:1; }
+  .asap-toggle:hover { border-color: var(--red); color: var(--red-text); background: var(--red-bg); }
+  .asap-toggle.active {
+    border-style: solid;
+    border-color: var(--red);
+    background: var(--red-bg);
+    color: var(--red-text);
+    font-weight: 700;
+    animation: urgentpulse 2s ease-in-out infinite;
+  }
+  @keyframes urgentpulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(226,75,74,0.3); }
+    50%      { box-shadow: 0 0 0 7px rgba(226,75,74,0); }
+  }
+
+  .send-btn {
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .12s;
+  }
+  .send-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .toast {
+    margin-top: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    color: var(--green-text);
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { display: flex; }
+
+  /* ── FRONT DESK VIEW ── */
+  .fd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .fd-title { font-size: 16px; font-weight: 600; }
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--red-bg);
+    color: var(--red-text);
+    border: 1px solid var(--red);
+  }
+  .badge.zero { background: var(--surface2); color: var(--text2); border-color: var(--border); }
+
+  .live-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .live-dot::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.85)} }
+
+  .req-list { display: flex; flex-direction: column; gap: 8px; }
+  .req-card {
+    padding: 13px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: opacity .25s;
+  }
+  .req-card.resolved { opacity: .4; }
+  .req-card.urgent { border-color: var(--red); border-width: 2px; background: var(--red-bg); }
+  .req-card.urgent .req-room { color: var(--red-text); }
+  .req-card.new-anim { animation: slidein .3s ease; }
+  @keyframes slidein { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+
+  .req-icon { font-size: 22px; flex-shrink: 0; }
+  .req-body { flex: 1; min-width: 0; }
+  .req-room { font-size: 11px; color: var(--text3); margin-bottom: 2px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .req-text { font-size: 14px; font-weight: 500; color: var(--text); }
+  .req-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  .resolve-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all .12s;
+  }
+  .resolve-btn:hover { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
+  .resolve-btn.done { background: var(--green-bg); border-color: var(--green); color: var(--green-text); cursor: default; }
+
+  .clear-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .clear-btn:hover { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
+
+  .empty {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--text3);
+    font-size: 14px;
+  }
+  .empty .e-icon { font-size: 32px; margin-bottom: 10px; }
+
+  /* ── SETTINGS VIEW ── */
+  .settings-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .settings-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .settings-card p { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; }
+  .settings-card input {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: var(--bg);
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--text);
+    margin-bottom: 8px;
+    outline: none;
+  }
+  .settings-card input:focus { border-color: var(--blue); }
+  .save-btn {
+    padding: 9px 20px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--blue);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .12s;
+  }
+  .save-btn:hover { opacity: .85; }
+  .sql-box {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: var(--radius);
+    padding: 14px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin-bottom: 8px;
+  }
+  .copy-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .copy-btn:hover { background: var(--surface2); }
+
+  #help-btn-wrap:hover { background: var(--blue-bg) !important; border-color: var(--blue) !important; }
+
+
+  /* ── Notification popup ── */
+  .notif-popup {
+    position: fixed;
+    top: 70px; right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    min-width: 280px; max-width: 340px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    display: flex; align-items: flex-start; gap: 12px;
+    z-index: 999;
+    animation: slideInRight .3s ease;
+    cursor: pointer;
+  }
+  .notif-popup.hiding { animation: slideOutRight .3s ease forwards; }
+  @keyframes slideInRight {
+    from { opacity:0; transform: translateX(60px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+  @keyframes slideOutRight {
+    from { opacity:1; transform: translateX(0); }
+    to   { opacity:0; transform: translateX(60px); }
+  }
+  .notif-icon { font-size: 26px; flex-shrink:0; }
+  .notif-body { flex:1; min-width:0; }
+  .notif-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .notif-msg { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .notif-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .notif-close { font-size: 16px; color: var(--text3); background:none; border:none; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
+  /* ── PIN overlay ── */
+  .pin-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; z-index: 100; min-height: 300px;
+  }
+  .pin-overlay.hidden { display: none; }
+  .pin-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .pin-sub { font-size: 13px; color: var(--text2); margin-top: -12px; }
+  .pin-dots { display: flex; gap: 12px; }
+  .pin-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--border2); background: transparent;
+    transition: background .15s;
+  }
+  .pin-dot.filled { background: var(--blue); border-color: var(--blue); }
+  .pin-dot.error { background: var(--red); border-color: var(--red); }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 64px); gap: 10px; }
+  .pin-key {
+    height: 56px; border-radius: var(--radius); border: 1px solid var(--border2);
+    background: var(--surface); font-size: 18px; font-weight: 500;
+    color: var(--text); cursor: pointer; transition: all .12s;
+  }
+  .pin-key.key-flash { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); transform: scale(0.94); }
+  .pin-key:hover { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
+  .pin-key.wide { grid-column: span 3; font-size: 13px; color: var(--text2); height: 42px; }
+  .pin-shake { animation: shake .35s ease; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+  }
+  .settings-pin-section { margin-bottom: 16px; }
+  .pin-display {
+    font-size: 28px; font-weight: 600; letter-spacing: 8px;
+    color: var(--blue); font-family: monospace;
+    padding: 10px 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<div id="setup-banner">
+  ⚠️ Not connected yet — go to <strong>Settings</strong> tab and paste your Supabase URL &amp; key to get started.
+  &nbsp;<a href="#" onclick="switchTab('settings');return false">Open Settings →</a>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    School Help Desk
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('classroom')">🏫 Classroom</button>
+    <button class="tab-btn" onclick="switchTab('frontdesk')">🏢 Front Desk</button>
+    <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+  </div>
+</header>
+
+<!-- ── CLASSROOM VIEW ── -->
+<div id="view-classroom" class="view active">
+  <div class="room-row">
+    <span>You are in</span>
+    <select id="room-select" onchange="localStorage.setItem('saved_room', this.value)">
+      <option>Room A</option>
+      <option>Room B</option>
+      <option>Room C</option>
+      <option>Room D</option>
+      <option>Room E</option>
+      <option>Room F</option>
+    </select>
+  </div>
+
+  <button id="help-btn-wrap" onclick="toggleQuick()" style="
+      width:100%; padding:32px 20px; margin-bottom:4px;
+      border-radius:18px; border:1px solid var(--border);
+      background:var(--surface); cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      transition: background .15s, border-color .15s;">
+
+    <!-- SOS icon -->
+    <span style="font-size:52px; line-height:1; display:block;">🆘</span>
+    <div style="font-size:17px; font-weight:700; color:var(--text);">Request Help from Front Desk</div>
+    <div style="font-size:13px; color:var(--text2);">Tap to choose what you need</div>
+  </button>
+
+  <div class="quick-panel" id="quick-panel">
+    <div class="quick-grid">
+      <button class="quick-item" onclick="prefill('Printouts / copies')"><span class="qi">🖨️</span> Printouts</button>
+      <button class="quick-item" onclick="prefill('First aid / band-aid')"><span class="qi">🩹</span> First aid</button>
+      <button class="quick-item" onclick="prefill('Pencils / markers')"><span class="qi">✏️</span> Pencils / markers</button>
+      <button class="quick-item" onclick="prefill('Paper / supplies')"><span class="qi">📄</span> Paper</button>
+      <button class="quick-item" onclick="prefill('Scissors / tape')"><span class="qi">✂️</span> Scissors / tape</button>
+      <button class="quick-item" onclick="prefill('Tech help needed')"><span class="qi">💻</span> Tech help</button>
+    </div>
+    <div class="custom-row">
+      <input type="text" id="custom-input" placeholder="Type your request or pick one above…" />
+      <button class="send-btn" onclick="sendCustom()">Send →</button>
+    </div>
+    <button id="asap-toggle" class="asap-toggle" onclick="toggleAsap()">
+      🚨 Need it ASAP? <span id="asap-label">Tap to mark urgent</span>
+    </button>
+  </div>
+
+  <div class="toast" id="toast">
+    ✅ <span id="toast-text">Request sent to front desk!</span>
+  </div>
+</div>
+
+<!-- ── FRONT DESK VIEW ── -->
+<div id="view-frontdesk" class="view" style="position:relative; min-height:400px;">
+  <div class="pin-overlay" id="fd-pin-overlay" tabindex="0">
+    <div class="pin-title">Enter PIN to access Front Desk</div>
+    <div class="pin-sub">Front desk is PIN protected</div>
+    <div class="pin-dots" id="fd-pin-dots">
+      <div class="pin-dot" id="fdpd0"></div>
+      <div class="pin-dot" id="fdpd1"></div>
+      <div class="pin-dot" id="fdpd2"></div>
+      <div class="pin-dot" id="fdpd3"></div>
+    </div>
+    <input id="fd-ghost-input" type="tel" maxlength="4"
+      style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;"
+      inputmode="numeric" autocomplete="off"
+      oninput="ghostInput(this, 'fd')" />
+    <div class="pin-pad" id="pin-pad-fd">
+      <button class="pin-key" onclick="fdPinPress('1')">1</button>
+      <button class="pin-key" onclick="fdPinPress('2')">2</button>
+      <button class="pin-key" onclick="fdPinPress('3')">3</button>
+      <button class="pin-key" onclick="fdPinPress('4')">4</button>
+      <button class="pin-key" onclick="fdPinPress('5')">5</button>
+      <button class="pin-key" onclick="fdPinPress('6')">6</button>
+      <button class="pin-key" onclick="fdPinPress('7')">7</button>
+      <button class="pin-key" onclick="fdPinPress('8')">8</button>
+      <button class="pin-key" onclick="fdPinPress('9')">9</button>
+      <button class="pin-key" onclick="fdPinPress('back')">⌫</button>
+      <button class="pin-key" onclick="fdPinPress('0')">0</button>
+      <button class="pin-key" onclick="fdPinPress('clear')">✕</button>
+    </div>
+  </div>
+  <div class="fd-header">
+    <span class="fd-title">Incoming requests</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="live-dot" id="live-label">Connected</span>
+      <button class="clear-btn" onclick="clearResolved()">🗑 Clear resolved</button>
+      <span class="badge zero" id="pending-badge">0 pending</span>
+    </div>
+  </div>
+  <div class="req-list" id="req-list">
+    <div class="empty" id="empty-state">
+      <div class="e-icon">📭</div>
+      No requests yet — all clear!
+    </div>
+  </div>
+</div>
+
+<!-- ── SETTINGS VIEW ── -->
+<div id="view-settings" class="view" style="position:relative; min-height:400px;">
+
+  <!-- PIN lock overlay -->
+  <div class="pin-overlay" id="pin-overlay" tabindex="0">
+    <div class="pin-title" id="pin-title">Enter PIN to access Settings</div>
+    <div class="pin-sub" id="pin-sub">Settings are PIN protected</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <input id="settings-ghost-input" type="tel" maxlength="4"
+      style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;"
+      inputmode="numeric" autocomplete="off"
+      oninput="ghostInput(this, 'settings')" />
+    <div class="pin-pad" id="pin-pad-settings">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" onclick="pinPress('back')">⌫</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinPress('clear')">✕</button>
+    </div>
+  </div>
+  <div class="settings-card">
+    <h3>supabase.com - project credentials</h3>
+    <input type="text" id="cfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
+    <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5c... (anon key)" />
+    <button class="save-btn" onclick="saveConfig()">Save &amp; Connect</button>
+  </div>
+  <div class="settings-card settings-pin-section">
+    <h3>🔒 Settings PIN</h3>
+    <p>Set a 4-digit PIN to prevent teachers from accessing this Settings page. Keep it somewhere safe!</p>
+    <div id="current-pin-display" style="margin-bottom:12px; display:none;">
+      <div style="font-size:12px; color:var(--text2); margin-bottom:4px;">Current PIN</div>
+      <div class="pin-display" id="pin-value-display">––––</div>
+    </div>
+    <button class="save-btn" onclick="openSetPin('settings')" style="background:var(--surface); color:var(--text); border:1px solid var(--border2);">Generate new PIN</button>
+    <button class="save-btn" onclick="removePin('settings')" id="remove-pin-btn" style="background:var(--surface); color:var(--red-text); border:1px solid var(--red); margin-left:8px; display:none;">Remove PIN</button>
+  </div>
+
+  <div class="settings-card settings-pin-section">
+    <h3>🏢 Front Desk PIN</h3>
+    <p>Set a separate 4-digit PIN for the Front Desk tab. Use a different code from Settings so only front desk staff can access it.</p>
+    <div id="fd-pin-display" style="margin-bottom:12px; display:none;">
+      <div style="font-size:12px; color:var(--text2); margin-bottom:4px;">Current Front Desk PIN</div>
+      <div class="pin-display" id="fd-pin-value-display">––––</div>
+    </div>
+    <button class="save-btn" onclick="openSetPin('frontdesk')" style="background:var(--surface); color:var(--text); border:1px solid var(--border2);">Generate new PIN</button>
+    <button class="save-btn" onclick="removePin('frontdesk')" id="remove-fd-pin-btn" style="background:var(--surface); color:var(--red-text); border:1px solid var(--red); margin-left:8px; display:none;">Remove PIN</button>
+  </div>
+
+  <!-- Set PIN modal -->
+  <div class="pin-overlay hidden" id="set-pin-overlay" style="background:rgba(0,0,0,0.35);">
+    <div style="background:var(--surface); border-radius:var(--radius-lg); padding:28px; display:flex; flex-direction:column; align-items:center; gap:16px; border:1px solid var(--border);">
+      <div class="pin-title" id="set-pin-title">Choose a new 4-digit PIN</div>
+      <div class="pin-dots" id="set-pin-dots">
+        <div class="pin-dot" id="spd0"></div>
+        <div class="pin-dot" id="spd1"></div>
+        <div class="pin-dot" id="spd2"></div>
+        <div class="pin-dot" id="spd3"></div>
+      </div>
+    <div class="pin-pad" id="pin-pad-set">
+        <button class="pin-key" onclick="setPinPress('1')">1</button>
+        <button class="pin-key" onclick="setPinPress('2')">2</button>
+        <button class="pin-key" onclick="setPinPress('3')">3</button>
+        <button class="pin-key" onclick="setPinPress('4')">4</button>
+        <button class="pin-key" onclick="setPinPress('5')">5</button>
+        <button class="pin-key" onclick="setPinPress('6')">6</button>
+        <button class="pin-key" onclick="setPinPress('7')">7</button>
+        <button class="pin-key" onclick="setPinPress('8')">8</button>
+        <button class="pin-key" onclick="setPinPress('9')">9</button>
+        <button class="pin-key" onclick="setPinPress('back')">⌫</button>
+        <button class="pin-key" onclick="setPinPress('0')">0</button>
+        <button class="pin-key" onclick="setPinPress('clear')">✕</button>
+      </div>
+      <button class="pin-key wide" onclick="cancelSetPin()">Cancel</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+
+
+
+
+// ── Ghost input PIN keyboard handler ──
+function ghostInput(el, screen) {
+  const digits = el.value.replace(/\D/g, '');
+  el.value = digits; // strip non-numeric
+  const last = digits[digits.length - 1];
+  if (!last) return;
+  // Only process the last typed digit (input fires after each char)
+  if (screen === 'fd') {
+    highlightKey('pin-pad-fd', last);
+    // Rebuild entry from scratch based on ghost input length
+    const cur = fdPinEntry.length;
+    if (digits.length > cur) fdPinPress(last);
+    if (digits.length === 0) { fdPinEntry = ''; updateDots('fd-pin-dots', 0); }
+  } else if (screen === 'settings') {
+    highlightKey('pin-pad-settings', last);
+    const cur = pinEntry.length;
+    if (digits.length > cur) pinPress(last);
+    if (digits.length === 0) { pinEntry = ''; updateDots('pin-dots', 0); }
+  } else if (screen === 'setpin') {
+    highlightKey('pin-pad-set', last);
+    const cur = setPinEntry.length;
+    if (digits.length > cur) setPinPress(last);
+    if (digits.length === 0) { setPinEntry = ''; updateDots('set-pin-dots', 0); }
+  }
+}
+
+// Handle backspace via keydown on ghost inputs
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Backspace') return;
+  const fd = document.getElementById('fd-ghost-input');
+  const st = document.getElementById('settings-ghost-input');
+  const sp = document.getElementById('setpin-ghost-input');
+  if (document.activeElement === fd) { fdPinPress('back'); fd.value = fdPinEntry; }
+  else if (document.activeElement === st) { pinPress('back'); st.value = pinEntry; }
+  else if (document.activeElement === sp) { setPinPress('back'); sp.value = setPinEntry; }
+}, false);
+
+</script>
+<script>
+const HARDCODED_URL = 'https://tcjnkimywszpiixtotaf.supabase.co';
+const HARDCODED_KEY = 'sb_publishable_oOQvaRg9aCOYRU1XYjaGsg_kS1cyMxJ';
+
+let supaUrl = HARDCODED_URL || localStorage.getItem('supa_url') || '';
+let supaKey = HARDCODED_KEY || localStorage.getItem('supa_key') || '';
+let db = null;
+
+function initClient() {
+  if (!supaUrl || !supaKey) return false;
+  db = supabase.createClient(supaUrl, supaKey);
+  return true;
+}
+
+// ── UI helpers ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+  if (tab !== 'settings') { settingsPinUnlocked = false; }
+  if (tab !== 'frontdesk' && tab !== 'settings') activePinScreen = null;
+  if (tab !== 'frontdesk') { fdPinUnlocked = false; fdPinEntry = ''; }
+  document.getElementById('view-' + tab).classList.add('active');
+  if (tab === 'frontdesk') { initFdPinOverlay(); if (fdPinUnlocked) loadRequests(); }
+  if (tab === 'settings') { prefillSettings(); if (!settingsPinUnlocked) initPinOverlay(); }
+}
+
+function prefillSettings() {
+  document.getElementById('cfg-url').value = supaUrl;
+  document.getElementById('cfg-key').value = supaKey;
+}
+
+function saveConfig() {
+  supaUrl = document.getElementById('cfg-url').value.trim().replace(/\/$/, '');
+  supaKey = document.getElementById('cfg-key').value.trim();
+  localStorage.setItem('supa_url', supaUrl);
+  localStorage.setItem('supa_key', supaKey);
+  initClient();
+  checkConnection();
+}
+
+async function checkConnection() {
+  if (!db) { showBanner(true); return; }
+  try {
+    const { error } = await db.from('requests').select('id').limit(1);
+    if (error) throw error;
+    showBanner(false);
+    alert('✅ Connected! This file is ready to use on all computers.');
+    startRealtime();
+  } catch (e) {
+    showBanner(true);
+    alert('❌ Connection error: ' + e.message);
+  }
+}
+
+function showBanner(show) {
+  document.getElementById('setup-banner').classList.toggle('hidden', !show);
+}
+
+// ── Classroom: send request ──
+function toggleQuick() {
+  const circle = document.getElementById('help-circle');
+  if (circle) {
+    circle.classList.add('pressed');
+    setTimeout(() => circle.classList.remove('pressed'), 200);
+  }
+  const panel = document.getElementById('quick-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    setTimeout(() => document.getElementById('custom-input').focus(), 50);
+  } else {
+    // Reset ASAP when panel closes
+    asapActive = false;
+    const btn = document.getElementById('asap-toggle');
+    const lbl = document.getElementById('asap-label');
+    if (btn) { btn.classList.remove('active'); lbl.textContent = 'Tap to mark urgent'; }
+  }
+}
+
+let asapActive = false;
+
+function toggleAsap() {
+  asapActive = !asapActive;
+  const btn = document.getElementById('asap-toggle');
+  const lbl = document.getElementById('asap-label');
+  btn.classList.toggle('active', asapActive);
+  lbl.textContent = asapActive ? '✓ Marked as urgent' : 'Tap to mark urgent';
+}
+
+// Load saved room on startup
+const savedRoom = localStorage.getItem('saved_room');
+if (savedRoom) document.getElementById('room-select').value = savedRoom;
+
+function prefill(text) {
+  const input = document.getElementById('custom-input');
+  input.value = text;
+  input.focus();
+  input.setSelectionRange(text.length, text.length);
+}
+
+async function sendReq(msg) {
+  const room = document.getElementById('room-select').value;
+  if (!db) { alert('Not connected — check Settings.'); return; }
+  try {
+    const { error } = await db.from('requests').insert({ room, message: msg });
+    if (error) throw error;
+    showToast(`"${msg}" sent to front desk!`);
+    document.getElementById('quick-panel').classList.remove('open');
+    playChime();
+  } catch (e) {
+    alert('Error sending request: ' + e.message);
+  }
+}
+
+function sendCustom() {
+  let val = document.getElementById('custom-input').value.trim();
+  if (!val) return;
+  if (asapActive) val = '🚨 URGENT — ' + val;
+  sendReq(val);
+  document.getElementById('custom-input').value = '';
+  // Reset ASAP after sending
+  asapActive = false;
+  const btn = document.getElementById('asap-toggle');
+  const lbl = document.getElementById('asap-label');
+  if (btn) { btn.classList.remove('active'); lbl.textContent = 'Tap to mark urgent'; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+document.getElementById('custom-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendCustom();
+});
+
+// ── Front desk: load + poll ──
+let knownIds = new Set();
+let pollTimer = null;
+
+async function loadRequests() {
+  if (!db) return;
+  try {
+    const { data, error } = await db
+      .from('requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    renderRequests(data);
+  } catch (e) { console.error(e); }
+}
+
+function renderRequests(data) {
+  const list = document.getElementById('req-list');
+  const empty = document.getElementById('empty-state');
+  const badge = document.getElementById('pending-badge');
+
+  const pending = data.filter(r => !r.resolved).length;
+  badge.textContent = pending === 0 ? '0 pending' : `${pending} pending`;
+  badge.className = 'badge' + (pending === 0 ? ' zero' : '');
+
+  if (data.length === 0) {
+    empty.style.display = 'block';
+    list.querySelectorAll('.req-card').forEach(e => e.remove());
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.querySelectorAll('.req-card').forEach(card => {
+    if (!data.find(r => r.id === card.dataset.id)) card.remove();
+  });
+
+  data.forEach(req => {
+    let card = list.querySelector(`[data-id="${req.id}"]`);
+    const isNew = !card;
+    if (!card) {
+      card = document.createElement('div');
+      card.dataset.id = req.id;
+    }
+    card.className = 'req-card' + (req.resolved ? ' resolved' : '');
+
+    const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const isUrgent = req.message.includes('URGENT') || req.message.includes('ASAP');
+    const ageMin = Math.floor((Date.now() - new Date(req.created_at)) / 60000);
+    const ageLabel = !req.resolved && ageMin >= 1 ? `· ${ageMin}m ago` : '';
+    card.className = 'req-card' + (req.resolved ? ' resolved' : '') + (isUrgent && !req.resolved ? ' urgent' : '');
+    card.innerHTML = `
+      <div class="req-icon">${iconFor(req.message)}</div>
+      <div class="req-body">
+        <div class="req-room">${isUrgent && !req.resolved ? '🚨 ' : ''}${req.room}</div>
+        <div class="req-text">${req.message}</div>
+        <div class="req-time">${timeStr} ${ageLabel}</div>
+      </div>
+      ${!req.resolved
+        ? `<button class="resolve-btn" onclick="resolveReq('${req.id}', this)">✓ Done</button>`
+        : `<span class="resolve-btn done">✓ Resolved</span>`}
+    `;
+
+    if (isNew && !req.resolved) {
+      card.classList.add('new-anim');
+      if (knownIds.size > 0) {
+        playChime();
+        showNotif(req);
+      }
+      knownIds.add(req.id);
+    }
+    list.appendChild(card);
+  });
+}
+
+async function resolveReq(id, btn) {
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const { error } = await db.from('requests').update({ resolved: true }).eq('id', id);
+    if (error) throw error;
+    loadRequests();
+  } catch (e) {
+    alert('Error: ' + e.message);
+    btn.textContent = '✓ Done';
+    btn.disabled = false;
+  }
+}
+
+let reminderTimer = null;
+
+function startRealtime() {
+  if (pollTimer) clearInterval(pollTimer);
+  if (reminderTimer) clearInterval(reminderTimer);
+  if (!db) return;
+  pollTimer = setInterval(loadRequests, 5000);
+  reminderTimer = setInterval(checkReminders, 7 * 60 * 1000);
+  loadRequests();
+  scheduleDailyClear();
+}
+
+async function checkReminders() {
+  if (!db) return;
+  const { data, error } = await db
+    .from('requests')
+    .select('*')
+    .eq('resolved', false)
+    .order('created_at', { ascending: true });
+  if (error || !data || data.length === 0) return;
+  const count = data.length;
+  const oldest = data[0];
+  const ageMin = Math.floor((Date.now() - new Date(oldest.created_at)) / 60000);
+  showReminderNotif(count, oldest, ageMin);
+  playChime();
+}
+
+function showReminderNotif(count, oldest, ageMin) {
+  const container = document.getElementById('notif-container');
+  const el = document.createElement('div');
+  el.className = 'notif-popup';
+  el.style.borderLeftColor = 'var(--amber)';
+  el.innerHTML = `
+    <div class="notif-icon">⏰</div>
+    <div class="notif-body">
+      <div class="notif-title">${count} unresolved request${count > 1 ? 's' : ''}</div>
+      <div class="notif-msg">Oldest: ${oldest.room} — ${oldest.message}</div>
+      <div class="notif-time">Waiting ${ageMin} minute${ageMin !== 1 ? 's' : ''}</div>
+    </div>
+    <button class="notif-close" onclick="dismissNotif(this.closest('.notif-popup'))">✕</button>
+  `;
+  el.addEventListener('click', (e) => {
+    if (e.target.classList.contains('notif-close')) return;
+    switchTab('frontdesk');
+    dismissNotif(el);
+  });
+  container.appendChild(el);
+  setTimeout(() => dismissNotif(el), 8000);
+}
+
+async function clearOldRequests() {
+  if (!db) return;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { error } = await db
+    .from('requests')
+    .delete()
+    .lt('created_at', today.toISOString());
+  if (!error) loadRequests();
+}
+
+async function clearResolved() {
+  if (!db) return;
+  if (!confirm('Remove all resolved requests from the list?')) return;
+  const { error } = await db.from('requests').delete().eq('resolved', true);
+  if (error) alert('Error: ' + error.message);
+  else loadRequests();
+}
+
+function scheduleDailyClear() {
+  clearOldRequests();
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  const msUntilMidnight = midnight - now;
+  setTimeout(() => {
+    clearOldRequests();
+    setInterval(clearOldRequests, 24 * 60 * 60 * 1000);
+  }, msUntilMidnight);
+}
+
+function iconFor(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('print')) return '🖨️';
+  if (m.includes('first aid') || m.includes('band')) return '🩹';
+  if (m.includes('pencil') || m.includes('marker')) return '✏️';
+  if (m.includes('paper') || m.includes('suppli')) return '📄';
+  if (m.includes('scissor') || m.includes('tape')) return '✂️';
+  if (m.includes('tech') || m.includes('computer')) return '💻';
+  return '📋';
+}
+
+function showNotif(req) {
+  const container = document.getElementById('notif-container');
+  const el = document.createElement('div');
+  el.className = 'notif-popup';
+  const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  el.innerHTML = `
+    <div class="notif-icon">${iconFor(req.message)}</div>
+    <div class="notif-body">
+      <div class="notif-title">New request — ${req.room}</div>
+      <div class="notif-msg">${req.message}</div>
+      <div class="notif-time">${timeStr}</div>
+    </div>
+    <button class="notif-close" onclick="dismissNotif(this.closest('.notif-popup'))">✕</button>
+  `;
+  el.addEventListener('click', (e) => {
+    if (e.target.classList.contains('notif-close')) return;
+    switchTab('frontdesk');
+    dismissNotif(el);
+  });
+  container.appendChild(el);
+  // Auto dismiss after 6 seconds
+  setTimeout(() => dismissNotif(el), 6000);
+}
+
+function dismissNotif(el) {
+  if (!el || !el.parentNode) return;
+  el.classList.add('hiding');
+  setTimeout(() => el.remove(), 300);
+}
+
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523, 659, 784].forEach((freq, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = freq; o.type = 'sine';
+      const t = ctx.currentTime + i * 0.13;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.15, t + 0.05);
+      g.gain.linearRampToValueAtTime(0, t + 0.28);
+      o.start(t); o.stop(t + 0.3);
+    });
+  } catch(e) {}
+}
+
+function copySQL() {
+  navigator.clipboard.writeText(document.getElementById('sql-code').textContent)
+    .then(() => { const b = document.querySelector('.copy-btn'); b.textContent = '✅ Copied!'; setTimeout(() => b.textContent = '📋 Copy SQL', 2000); });
+}
+
+
+// ── PIN logic ──
+let pinEntry = '';
+let settingsPinUnlocked = false;
+const DEFAULT_PIN = ''; // empty = no pin set yet
+
+function getStoredPin() {
+  return localStorage.getItem('settings_pin') || '';
+}
+
+function getFdPin() {
+  return localStorage.getItem('frontdesk_pin') || '';
+}
+
+// ── Front desk PIN ──
+let fdPinEntry = '';
+let fdPinUnlocked = false;
+
+function initFdPinOverlay() {
+  const pin = getFdPin();
+  const overlay = document.getElementById('fd-pin-overlay');
+  if (!pin) {
+    overlay.classList.add('hidden');
+    fdPinUnlocked = true;
+    startRealtime();
+  } else {
+    overlay.classList.remove('hidden');
+    fdPinUnlocked = false;
+    setTimeout(() => { const i = document.getElementById('fd-ghost-input'); if(i) i.focus(); }, 100);
+  }
+}
+
+function fdPinPress(val) {
+  const dots = document.getElementById('fd-pin-dots');
+  if (val === 'clear') { fdPinEntry = ''; updateDots('fd-pin-dots', 0); return; }
+  if (val === 'back')  { fdPinEntry = fdPinEntry.slice(0,-1); updateDots('fd-pin-dots', fdPinEntry.length); return; }
+  if (fdPinEntry.length >= 4) return;
+  fdPinEntry += val;
+  updateDots('fd-pin-dots', fdPinEntry.length);
+  if (fdPinEntry.length === 4) {
+    const stored = getFdPin();
+    if (fdPinEntry === stored) {
+      fdPinUnlocked = true;
+      document.getElementById('fd-pin-overlay').classList.add('hidden');
+      activePinScreen = null;
+      fdPinEntry = '';
+      updateDots('fd-pin-dots', 0);
+      startRealtime();
+    } else {
+      dots.classList.add('pin-shake');
+      document.querySelectorAll('#fd-pin-dots .pin-dot').forEach(d => d.classList.add('error'));
+      setTimeout(() => {
+        dots.classList.remove('pin-shake');
+        document.querySelectorAll('#fd-pin-dots .pin-dot').forEach(d => { d.classList.remove('error'); d.classList.remove('filled'); });
+        fdPinEntry = '';
+      }, 600);
+    }
+  }
+}
+
+function updateDots(containerId, count) {
+  const prefix = containerId === 'pin-dots' ? 'pd' : containerId === 'fd-pin-dots' ? 'fdpd' : 'spd';
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById(prefix + i);
+    if (dot) dot.classList.toggle('filled', i < count);
+  }
+}
+
+function initPinOverlay() {
+  const pin = getStoredPin();
+  const overlay = document.getElementById('pin-overlay');
+  if (!pin) {
+    overlay.classList.add('hidden');
+    settingsPinUnlocked = true;
+  } else {
+    overlay.classList.remove('hidden');
+    settingsPinUnlocked = false;
+    setTimeout(() => { const i = document.getElementById('settings-ghost-input'); if(i) i.focus(); }, 100);
+  }
+  updatePinMgmtUI();
+}
+
+function updatePinMgmtUI() {
+  const pin = getStoredPin();
+  const display = document.getElementById('current-pin-display');
+  const removeBtn = document.getElementById('remove-pin-btn');
+  const pinVal = document.getElementById('pin-value-display');
+  if (pin) {
+    display.style.display = 'block';
+    pinVal.textContent = pin;
+    removeBtn.style.display = 'inline-block';
+  } else {
+    display.style.display = 'none';
+    removeBtn.style.display = 'none';
+  }
+
+  const fdPin = getFdPin();
+  const fdDisplay = document.getElementById('fd-pin-display');
+  const fdRemoveBtn = document.getElementById('remove-fd-pin-btn');
+  const fdPinVal = document.getElementById('fd-pin-value-display');
+  if (fdPin) {
+    fdDisplay.style.display = 'block';
+    fdPinVal.textContent = fdPin;
+    fdRemoveBtn.style.display = 'inline-block';
+  } else {
+    fdDisplay.style.display = 'none';
+    fdRemoveBtn.style.display = 'none';
+  }
+}
+
+function pinPress(val) {
+  const dots = document.getElementById('pin-dots');
+  if (val === 'clear') { pinEntry = ''; updateDots('pin-dots', 0); return; }
+  if (val === 'back') { pinEntry = pinEntry.slice(0, -1); updateDots('pin-dots', pinEntry.length); return; }
+  if (pinEntry.length >= 4) return;
+  pinEntry += val;
+  updateDots('pin-dots', pinEntry.length);
+  if (pinEntry.length === 4) {
+    const stored = getStoredPin();
+    if (pinEntry === stored) {
+      settingsPinUnlocked = true;
+      document.getElementById('pin-overlay').classList.add('hidden');
+      activePinScreen = null;
+      pinEntry = '';
+      updateDots('pin-dots', 0);
+    } else {
+      dots.classList.add('pin-shake');
+      document.querySelectorAll('#pin-dots .pin-dot').forEach(d => d.classList.add('error'));
+      setTimeout(() => {
+        dots.classList.remove('pin-shake');
+        document.querySelectorAll('#pin-dots .pin-dot').forEach(d => { d.classList.remove('error'); d.classList.remove('filled'); });
+        pinEntry = '';
+      }, 600);
+    }
+  }
+}
+
+
+
+// Set new PIN flow
+let setPinEntry = '';
+let setPinStep = 'choose'; // 'choose' | 'confirm'
+let setPinFirst = '';
+
+let setPinTarget = 'settings';
+
+function openSetPin(target) {
+  setPinTarget = target || 'settings';
+  setPinEntry = ''; setPinStep = 'choose'; setPinFirst = '';
+  document.getElementById('set-pin-title').textContent = setPinTarget === 'frontdesk'
+    ? 'Choose a Front Desk PIN' : 'Choose a Settings PIN';
+  updateDots('set-pin-dots', 0);
+  document.getElementById('set-pin-overlay').classList.remove('hidden');
+  setTimeout(() => { const i = document.getElementById('setpin-ghost-input'); if(i) i.focus(); }, 100);
+}
+
+function cancelSetPin() {
+  document.getElementById('set-pin-overlay').classList.add('hidden');
+  activePinScreen = null;
+  setPinEntry = '';
+}
+
+function setPinPress(val) {
+  if (val === 'clear') { setPinEntry = ''; updateDots('set-pin-dots', 0); return; }
+  if (val === 'back') { setPinEntry = setPinEntry.slice(0, -1); updateDots('set-pin-dots', setPinEntry.length); return; }
+  if (setPinEntry.length >= 4) return;
+  setPinEntry += val;
+  updateDots('set-pin-dots', setPinEntry.length);
+  if (setPinEntry.length === 4) {
+    if (setPinStep === 'choose') {
+      setPinFirst = setPinEntry;
+      setPinEntry = '';
+      setPinStep = 'confirm';
+      document.getElementById('set-pin-title').textContent = 'Confirm your PIN';
+      updateDots('set-pin-dots', 0);
+    } else {
+      if (setPinEntry === setPinFirst) {
+        const storageKey = setPinTarget === 'frontdesk' ? 'frontdesk_pin' : 'settings_pin';
+        localStorage.setItem(storageKey, setPinEntry);
+        document.getElementById('set-pin-overlay').classList.add('hidden');
+        activePinScreen = null;
+        updatePinMgmtUI();
+        const label = setPinTarget === 'frontdesk' ? 'Front Desk' : 'Settings';
+        alert('✅ ' + label + ' PIN set to ' + setPinEntry + ' — write it down somewhere safe!');
+        setPinEntry = '';
+      } else {
+        const dots = document.getElementById('set-pin-dots');
+        dots.classList.add('pin-shake');
+        document.querySelectorAll('#set-pin-dots .pin-dot').forEach(d => d.classList.add('error'));
+        setTimeout(() => {
+          dots.classList.remove('pin-shake');
+          document.querySelectorAll('#set-pin-dots .pin-dot').forEach(d => { d.classList.remove('error'); d.classList.remove('filled'); });
+          setPinEntry = ''; setPinStep = 'choose'; setPinFirst = '';
+          document.getElementById('set-pin-title').textContent = "PINs didn't match — try again";
+        }, 600);
+      }
+    }
+  }
+}
+
+function removePin(target) {
+  const label = target === 'frontdesk' ? 'Front Desk' : 'Settings';
+  if (!confirm('Remove the ' + label + ' PIN? Anyone will be able to open it.')) return;
+  const key = target === 'frontdesk' ? 'frontdesk_pin' : 'settings_pin';
+  localStorage.removeItem(key);
+  updatePinMgmtUI();
+}
+
+// ── Init ──
+if (initClient()) {
+  showBanner(false);
+} else {
+  showBanner(true);
+}
+</script>
+<div id="notif-container"></div>
+</body>
+</html>
