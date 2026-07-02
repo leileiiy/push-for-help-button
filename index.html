@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>School Help Desk</title>
 <style>
-  /* ── PASTE YOUR SUPABASE DETAILS IN THE SCRIPT BELOW ── */
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -38,20 +36,6 @@
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
 
   body { background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  /* Setup banner */
-  #setup-banner {
-    background: var(--amber-bg);
-    border-bottom: 1px solid var(--amber);
-    padding: 12px 20px;
-    font-size: 13px;
-    color: var(--amber-text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #setup-banner a { color: var(--amber-text); font-weight: 600; }
-  #setup-banner.hidden { display: none; }
 
   /* Header */
   header {
@@ -260,6 +244,7 @@
     background: var(--green);
     animation: pulse 1.8s ease-in-out infinite;
   }
+  .live-dot.offline::before { background: var(--red); animation: none; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.85)} }
 
   .req-list { display: flex; flex-direction: column; gap: 8px; }
@@ -332,19 +317,6 @@
   }
   .settings-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
   .settings-card p { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; }
-  .settings-card input {
-    width: 100%;
-    padding: 9px 12px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border2);
-    background: var(--bg);
-    font-size: 13px;
-    font-family: monospace;
-    color: var(--text);
-    margin-bottom: 8px;
-    outline: none;
-  }
-  .settings-card input:focus { border-color: var(--blue); }
   .save-btn {
     padding: 9px 20px;
     border-radius: var(--radius);
@@ -357,31 +329,8 @@
     transition: opacity .12s;
   }
   .save-btn:hover { opacity: .85; }
-  .sql-box {
-    background: #1e1e2e;
-    color: #cdd6f4;
-    border-radius: var(--radius);
-    padding: 14px;
-    font-size: 12px;
-    font-family: 'Courier New', monospace;
-    line-height: 1.6;
-    overflow-x: auto;
-    margin-bottom: 8px;
-  }
-  .copy-btn {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border2);
-    background: var(--surface);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all .12s;
-  }
-  .copy-btn:hover { background: var(--surface2); }
 
   #help-btn-wrap:hover { background: var(--blue-bg) !important; border-color: var(--blue) !important; }
-
 
   /* ── Notification popup ── */
   .notif-popup {
@@ -414,6 +363,7 @@
   .notif-msg { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .notif-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
   .notif-close { font-size: 16px; color: var(--text3); background:none; border:none; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
+
   /* ── PIN overlay ── */
   .pin-overlay {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -457,11 +407,6 @@
 </head>
 <body>
 
-<div id="setup-banner">
-  ⚠️ Not connected yet — go to <strong>Settings</strong> tab and paste your Supabase URL &amp; key to get started.
-  &nbsp;<a href="#" onclick="switchTab('settings');return false">Open Settings →</a>
-</div>
-
 <header>
   <div class="logo">
     <div class="logo-dot"></div>
@@ -494,8 +439,6 @@
       background:var(--surface); cursor:pointer;
       display:flex; flex-direction:column; align-items:center; gap:10px;
       transition: background .15s, border-color .15s;">
-
-    <!-- SOS icon -->
     <span style="font-size:52px; line-height:1; display:block;">🆘</span>
     <div style="font-size:17px; font-weight:700; color:var(--text);">Request Help from Front Desk</div>
     <div style="font-size:13px; color:var(--text2);">Tap to choose what you need</div>
@@ -557,7 +500,7 @@
   <div class="fd-header">
     <span class="fd-title">Incoming requests</span>
     <div style="display:flex;align-items:center;gap:12px">
-      <span class="live-dot" id="live-label">Connected</span>
+      <span class="live-dot" id="live-label">Connecting…</span>
       <button class="clear-btn" onclick="clearResolved()">🗑 Clear resolved</button>
       <span class="badge zero" id="pending-badge">0 pending</span>
     </div>
@@ -602,12 +545,13 @@
       <button class="pin-key" onclick="pinPress('clear')">✕</button>
     </div>
   </div>
+
   <div class="settings-card">
-    <h3>supabase.com - project credentials</h3>
-    <input type="text" id="cfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
-    <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5c... (anon key)" />
-    <button class="save-btn" onclick="saveConfig()">Save &amp; Connect</button>
+    <h3>🔥 Database</h3>
+    <p>This page is connected to Firebase Realtime Database. The connection details are already built into the page's code, so there's nothing to paste here — it'll work the same on any computer that opens this page.</p>
+    <span class="live-dot" id="settings-live-label">Connecting…</span>
   </div>
+
   <div class="settings-card settings-pin-section">
     <h3>🔒 Settings PIN</h3>
     <p>Set a 4-digit PIN to prevent teachers from accessing this Settings page. Keep it somewhere safe!</p>
@@ -660,130 +604,77 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+<div id="notif-container"></div>
 
+<script type="module">
+// ══════════════════════════════════════════════
+//  FIREBASE SETUP
+// ══════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import {
+  getDatabase, ref, push, onValue, update, remove
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCrdjwQg-o5fSY-6V0pTizzdMuBMdnuWyE",
+  authDomain: "fd-push-for-help.firebaseapp.com",
+  databaseURL: "https://fd-push-for-help-default-rtdb.firebaseio.com",
+  projectId: "fd-push-for-help",
+  storageBucket: "fd-push-for-help.firebasestorage.app",
+  messagingSenderId: "725292870562",
+  appId: "1:725292870562:web:5a4a902bf0a9f68150e0fb",
+  measurementId: "G-C2DPQ9TKLM"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const requestsRef = ref(db, 'requests');
 
-// ── Ghost input PIN keyboard handler ──
-function ghostInput(el, screen) {
-  const digits = el.value.replace(/\D/g, '');
-  el.value = digits; // strip non-numeric
-  const last = digits[digits.length - 1];
-  if (!last) return;
-  // Only process the last typed digit (input fires after each char)
-  if (screen === 'fd') {
-    highlightKey('pin-pad-fd', last);
-    // Rebuild entry from scratch based on ghost input length
-    const cur = fdPinEntry.length;
-    if (digits.length > cur) fdPinPress(last);
-    if (digits.length === 0) { fdPinEntry = ''; updateDots('fd-pin-dots', 0); }
-  } else if (screen === 'settings') {
-    highlightKey('pin-pad-settings', last);
-    const cur = pinEntry.length;
-    if (digits.length > cur) pinPress(last);
-    if (digits.length === 0) { pinEntry = ''; updateDots('pin-dots', 0); }
-  } else if (screen === 'setpin') {
-    highlightKey('pin-pad-set', last);
-    const cur = setPinEntry.length;
-    if (digits.length > cur) setPinPress(last);
-    if (digits.length === 0) { setPinEntry = ''; updateDots('set-pin-dots', 0); }
-  }
-}
+// Live connection indicator (Firebase's built-in special path)
+onValue(ref(db, '.info/connected'), (snap) => {
+  const connected = snap.val() === true;
+  const fdLabel = document.getElementById('live-label');
+  const setLabel = document.getElementById('settings-live-label');
+  [fdLabel, setLabel].forEach(el => {
+    if (!el) return;
+    el.textContent = connected ? 'Connected' : 'Reconnecting…';
+    el.classList.toggle('offline', !connected);
+  });
+});
 
-// Handle backspace via keydown on ghost inputs
-document.addEventListener('keydown', function(e) {
-  if (e.key !== 'Backspace') return;
-  const fd = document.getElementById('fd-ghost-input');
-  const st = document.getElementById('settings-ghost-input');
-  const sp = document.getElementById('setpin-ghost-input');
-  if (document.activeElement === fd) { fdPinPress('back'); fd.value = fdPinEntry; }
-  else if (document.activeElement === st) { pinPress('back'); st.value = pinEntry; }
-  else if (document.activeElement === sp) { setPinPress('back'); sp.value = setPinEntry; }
-}, false);
-
-</script>
-<script>
-const HARDCODED_URL = 'https://tcjnkimywszpiixtotaf.supabase.co';
-const HARDCODED_KEY = 'sb_publishable_oOQvaRg9aCOYRU1XYjaGsg_kS1cyMxJ';
-
-let supaUrl = HARDCODED_URL || localStorage.getItem('supa_url') || '';
-let supaKey = HARDCODED_KEY || localStorage.getItem('supa_key') || '';
-let db = null;
-
-function initClient() {
-  if (!supaUrl || !supaKey) return false;
-  db = supabase.createClient(supaUrl, supaKey);
-  return true;
-}
-
-// ── UI helpers ──
+// ══════════════════════════════════════════════
+//  UI: TAB SWITCHING
+// ══════════════════════════════════════════════
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
   if (tab !== 'settings') { settingsPinUnlocked = false; }
-  if (tab !== 'frontdesk' && tab !== 'settings') activePinScreen = null;
   if (tab !== 'frontdesk') { fdPinUnlocked = false; fdPinEntry = ''; }
   document.getElementById('view-' + tab).classList.add('active');
-  if (tab === 'frontdesk') { initFdPinOverlay(); if (fdPinUnlocked) loadRequests(); }
-  if (tab === 'settings') { prefillSettings(); if (!settingsPinUnlocked) initPinOverlay(); }
+  if (tab === 'frontdesk') { initFdPinOverlay(); }
+  if (tab === 'settings') { if (!settingsPinUnlocked) initPinOverlay(); }
 }
+window.switchTab = switchTab;
 
-function prefillSettings() {
-  document.getElementById('cfg-url').value = supaUrl;
-  document.getElementById('cfg-key').value = supaKey;
-}
-
-function saveConfig() {
-  supaUrl = document.getElementById('cfg-url').value.trim().replace(/\/$/, '');
-  supaKey = document.getElementById('cfg-key').value.trim();
-  localStorage.setItem('supa_url', supaUrl);
-  localStorage.setItem('supa_key', supaKey);
-  initClient();
-  checkConnection();
-}
-
-async function checkConnection() {
-  if (!db) { showBanner(true); return; }
-  try {
-    const { error } = await db.from('requests').select('id').limit(1);
-    if (error) throw error;
-    showBanner(false);
-    alert('✅ Connected! This file is ready to use on all computers.');
-    startRealtime();
-  } catch (e) {
-    showBanner(true);
-    alert('❌ Connection error: ' + e.message);
-  }
-}
-
-function showBanner(show) {
-  document.getElementById('setup-banner').classList.toggle('hidden', !show);
-}
-
-// ── Classroom: send request ──
+// ══════════════════════════════════════════════
+//  CLASSROOM: send a request
+// ══════════════════════════════════════════════
 function toggleQuick() {
-  const circle = document.getElementById('help-circle');
-  if (circle) {
-    circle.classList.add('pressed');
-    setTimeout(() => circle.classList.remove('pressed'), 200);
-  }
   const panel = document.getElementById('quick-panel');
   panel.classList.toggle('open');
   if (panel.classList.contains('open')) {
     setTimeout(() => document.getElementById('custom-input').focus(), 50);
   } else {
-    // Reset ASAP when panel closes
     asapActive = false;
     const btn = document.getElementById('asap-toggle');
     const lbl = document.getElementById('asap-label');
     if (btn) { btn.classList.remove('active'); lbl.textContent = 'Tap to mark urgent'; }
   }
 }
+window.toggleQuick = toggleQuick;
 
 let asapActive = false;
-
 function toggleAsap() {
   asapActive = !asapActive;
   const btn = document.getElementById('asap-toggle');
@@ -791,8 +682,8 @@ function toggleAsap() {
   btn.classList.toggle('active', asapActive);
   lbl.textContent = asapActive ? '✓ Marked as urgent' : 'Tap to mark urgent';
 }
+window.toggleAsap = toggleAsap;
 
-// Load saved room on startup
 const savedRoom = localStorage.getItem('saved_room');
 if (savedRoom) document.getElementById('room-select').value = savedRoom;
 
@@ -802,13 +693,12 @@ function prefill(text) {
   input.focus();
   input.setSelectionRange(text.length, text.length);
 }
+window.prefill = prefill;
 
 async function sendReq(msg) {
   const room = document.getElementById('room-select').value;
-  if (!db) { alert('Not connected — check Settings.'); return; }
   try {
-    const { error } = await db.from('requests').insert({ room, message: msg });
-    if (error) throw error;
+    await push(requestsRef, { room, message: msg, resolved: false, created_at: Date.now() });
     showToast(`"${msg}" sent to front desk!`);
     document.getElementById('quick-panel').classList.remove('open');
     playChime();
@@ -823,12 +713,12 @@ function sendCustom() {
   if (asapActive) val = '🚨 URGENT — ' + val;
   sendReq(val);
   document.getElementById('custom-input').value = '';
-  // Reset ASAP after sending
   asapActive = false;
   const btn = document.getElementById('asap-toggle');
   const lbl = document.getElementById('asap-label');
   if (btn) { btn.classList.remove('active'); lbl.textContent = 'Tap to mark urgent'; }
 }
+window.sendCustom = sendCustom;
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -841,23 +731,19 @@ document.getElementById('custom-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendCustom();
 });
 
-// ── Front desk: load + poll ──
+// ══════════════════════════════════════════════
+//  FRONT DESK: live list of requests
+// ══════════════════════════════════════════════
 let knownIds = new Set();
-let pollTimer = null;
+let latestRequests = []; // cached snapshot, used by the reminder timer
 
-async function loadRequests() {
-  if (!db) return;
-  try {
-    const { data, error } = await db
-      .from('requests')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    renderRequests(data);
-  } catch (e) { console.error(e); }
+function snapshotToArray(val) {
+  if (!val) return [];
+  return Object.keys(val).map(id => ({ id, ...val[id] }));
 }
 
 function renderRequests(data) {
+  latestRequests = data;
   const list = document.getElementById('req-list');
   const empty = document.getElementById('empty-state');
   const badge = document.getElementById('pending-badge');
@@ -877,82 +763,79 @@ function renderRequests(data) {
     if (!data.find(r => r.id === card.dataset.id)) card.remove();
   });
 
-  data.forEach(req => {
-    let card = list.querySelector(`[data-id="${req.id}"]`);
-    const isNew = !card;
-    if (!card) {
-      card = document.createElement('div');
-      card.dataset.id = req.id;
-    }
-    card.className = 'req-card' + (req.resolved ? ' resolved' : '');
-
-    const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const isUrgent = req.message.includes('URGENT') || req.message.includes('ASAP');
-    const ageMin = Math.floor((Date.now() - new Date(req.created_at)) / 60000);
-    const ageLabel = !req.resolved && ageMin >= 1 ? `· ${ageMin}m ago` : '';
-    card.className = 'req-card' + (req.resolved ? ' resolved' : '') + (isUrgent && !req.resolved ? ' urgent' : '');
-    card.innerHTML = `
-      <div class="req-icon">${iconFor(req.message)}</div>
-      <div class="req-body">
-        <div class="req-room">${isUrgent && !req.resolved ? '🚨 ' : ''}${req.room}</div>
-        <div class="req-text">${req.message}</div>
-        <div class="req-time">${timeStr} ${ageLabel}</div>
-      </div>
-      ${!req.resolved
-        ? `<button class="resolve-btn" onclick="resolveReq('${req.id}', this)">✓ Done</button>`
-        : `<span class="resolve-btn done">✓ Resolved</span>`}
-    `;
-
-    if (isNew && !req.resolved) {
-      card.classList.add('new-anim');
-      if (knownIds.size > 0) {
-        playChime();
-        showNotif(req);
+  data
+    .sort((a, b) => b.created_at - a.created_at)
+    .forEach(req => {
+      let card = list.querySelector(`[data-id="${req.id}"]`);
+      const isNew = !card;
+      if (!card) {
+        card = document.createElement('div');
+        card.dataset.id = req.id;
       }
-      knownIds.add(req.id);
-    }
-    list.appendChild(card);
-  });
+
+      const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const isUrgent = req.message.includes('URGENT') || req.message.includes('ASAP');
+      const ageMin = Math.floor((Date.now() - req.created_at) / 60000);
+      const ageLabel = !req.resolved && ageMin >= 1 ? `· ${ageMin}m ago` : '';
+      card.className = 'req-card' + (req.resolved ? ' resolved' : '') + (isUrgent && !req.resolved ? ' urgent' : '');
+      card.innerHTML = `
+        <div class="req-icon">${iconFor(req.message)}</div>
+        <div class="req-body">
+          <div class="req-room">${isUrgent && !req.resolved ? '🚨 ' : ''}${req.room}</div>
+          <div class="req-text">${req.message}</div>
+          <div class="req-time">${timeStr} ${ageLabel}</div>
+        </div>
+        ${!req.resolved
+          ? `<button class="resolve-btn" onclick="resolveReq('${req.id}', this)">✓ Done</button>`
+          : `<span class="resolve-btn done">✓ Resolved</span>`}
+      `;
+
+      if (isNew && !req.resolved) {
+        card.classList.add('new-anim');
+        if (knownIds.size > 0) {
+          playChime();
+          showNotif(req);
+        }
+        knownIds.add(req.id);
+      }
+      list.appendChild(card);
+    });
 }
 
 async function resolveReq(id, btn) {
   btn.textContent = '…';
   btn.disabled = true;
   try {
-    const { error } = await db.from('requests').update({ resolved: true }).eq('id', id);
-    if (error) throw error;
-    loadRequests();
+    await update(ref(db, 'requests/' + id), { resolved: true });
   } catch (e) {
     alert('Error: ' + e.message);
     btn.textContent = '✓ Done';
     btn.disabled = false;
   }
 }
+window.resolveReq = resolveReq;
 
 let reminderTimer = null;
+let requestsListenerAttached = false;
 
-function startRealtime() {
-  if (pollTimer) clearInterval(pollTimer);
+function initRealtime() {
+  if (!requestsListenerAttached) {
+    onValue(requestsRef, (snap) => {
+      renderRequests(snapshotToArray(snap.val()));
+    });
+    requestsListenerAttached = true;
+  }
   if (reminderTimer) clearInterval(reminderTimer);
-  if (!db) return;
-  pollTimer = setInterval(loadRequests, 5000);
   reminderTimer = setInterval(checkReminders, 7 * 60 * 1000);
-  loadRequests();
   scheduleDailyClear();
 }
 
-async function checkReminders() {
-  if (!db) return;
-  const { data, error } = await db
-    .from('requests')
-    .select('*')
-    .eq('resolved', false)
-    .order('created_at', { ascending: true });
-  if (error || !data || data.length === 0) return;
-  const count = data.length;
-  const oldest = data[0];
-  const ageMin = Math.floor((Date.now() - new Date(oldest.created_at)) / 60000);
-  showReminderNotif(count, oldest, ageMin);
+function checkReminders() {
+  const pending = latestRequests.filter(r => !r.resolved).sort((a, b) => a.created_at - b.created_at);
+  if (pending.length === 0) return;
+  const oldest = pending[0];
+  const ageMin = Math.floor((Date.now() - oldest.created_at) / 60000);
+  showReminderNotif(pending.length, oldest, ageMin);
   playChime();
 }
 
@@ -980,23 +863,32 @@ function showReminderNotif(count, oldest, ageMin) {
 }
 
 async function clearOldRequests() {
-  if (!db) return;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const { error } = await db
-    .from('requests')
-    .delete()
-    .lt('created_at', today.toISOString());
-  if (!error) loadRequests();
+  const cutoff = today.getTime();
+  const updates = {};
+  latestRequests.forEach(r => {
+    if (r.created_at < cutoff) updates['requests/' + r.id] = null;
+  });
+  if (Object.keys(updates).length > 0) {
+    await update(ref(db), updates);
+  }
 }
 
 async function clearResolved() {
-  if (!db) return;
   if (!confirm('Remove all resolved requests from the list?')) return;
-  const { error } = await db.from('requests').delete().eq('resolved', true);
-  if (error) alert('Error: ' + error.message);
-  else loadRequests();
+  const updates = {};
+  latestRequests.forEach(r => {
+    if (r.resolved) updates['requests/' + r.id] = null;
+  });
+  if (Object.keys(updates).length === 0) return;
+  try {
+    await update(ref(db), updates);
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
 }
+window.clearResolved = clearResolved;
 
 function scheduleDailyClear() {
   clearOldRequests();
@@ -1041,7 +933,6 @@ function showNotif(req) {
     dismissNotif(el);
   });
   container.appendChild(el);
-  // Auto dismiss after 6 seconds
   setTimeout(() => dismissNotif(el), 6000);
 }
 
@@ -1050,6 +941,7 @@ function dismissNotif(el) {
   el.classList.add('hiding');
   setTimeout(() => el.remove(), 300);
 }
+window.dismissNotif = dismissNotif;
 
 function playChime() {
   try {
@@ -1067,26 +959,16 @@ function playChime() {
   } catch(e) {}
 }
 
-function copySQL() {
-  navigator.clipboard.writeText(document.getElementById('sql-code').textContent)
-    .then(() => { const b = document.querySelector('.copy-btn'); b.textContent = '✅ Copied!'; setTimeout(() => b.textContent = '📋 Copy SQL', 2000); });
-}
-
-
-// ── PIN logic ──
+// ══════════════════════════════════════════════
+//  PIN LOGIC (unchanged — still uses localStorage,
+//  this is per-device UI lock, not database auth)
+// ══════════════════════════════════════════════
 let pinEntry = '';
 let settingsPinUnlocked = false;
-const DEFAULT_PIN = ''; // empty = no pin set yet
 
-function getStoredPin() {
-  return localStorage.getItem('settings_pin') || '';
-}
+function getStoredPin() { return localStorage.getItem('settings_pin') || ''; }
+function getFdPin() { return localStorage.getItem('frontdesk_pin') || ''; }
 
-function getFdPin() {
-  return localStorage.getItem('frontdesk_pin') || '';
-}
-
-// ── Front desk PIN ──
 let fdPinEntry = '';
 let fdPinUnlocked = false;
 
@@ -1096,11 +978,19 @@ function initFdPinOverlay() {
   if (!pin) {
     overlay.classList.add('hidden');
     fdPinUnlocked = true;
-    startRealtime();
+    initRealtime();
   } else {
     overlay.classList.remove('hidden');
     fdPinUnlocked = false;
     setTimeout(() => { const i = document.getElementById('fd-ghost-input'); if(i) i.focus(); }, 100);
+  }
+}
+
+function updateDots(containerId, count) {
+  const prefix = containerId === 'pin-dots' ? 'pd' : containerId === 'fd-pin-dots' ? 'fdpd' : 'spd';
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById(prefix + i);
+    if (dot) dot.classList.toggle('filled', i < count);
   }
 }
 
@@ -1116,10 +1006,9 @@ function fdPinPress(val) {
     if (fdPinEntry === stored) {
       fdPinUnlocked = true;
       document.getElementById('fd-pin-overlay').classList.add('hidden');
-      activePinScreen = null;
       fdPinEntry = '';
       updateDots('fd-pin-dots', 0);
-      startRealtime();
+      initRealtime();
     } else {
       dots.classList.add('pin-shake');
       document.querySelectorAll('#fd-pin-dots .pin-dot').forEach(d => d.classList.add('error'));
@@ -1131,14 +1020,7 @@ function fdPinPress(val) {
     }
   }
 }
-
-function updateDots(containerId, count) {
-  const prefix = containerId === 'pin-dots' ? 'pd' : containerId === 'fd-pin-dots' ? 'fdpd' : 'spd';
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById(prefix + i);
-    if (dot) dot.classList.toggle('filled', i < count);
-  }
-}
+window.fdPinPress = fdPinPress;
 
 function initPinOverlay() {
   const pin = getStoredPin();
@@ -1194,7 +1076,6 @@ function pinPress(val) {
     if (pinEntry === stored) {
       settingsPinUnlocked = true;
       document.getElementById('pin-overlay').classList.add('hidden');
-      activePinScreen = null;
       pinEntry = '';
       updateDots('pin-dots', 0);
     } else {
@@ -1208,14 +1089,11 @@ function pinPress(val) {
     }
   }
 }
+window.pinPress = pinPress;
 
-
-
-// Set new PIN flow
 let setPinEntry = '';
-let setPinStep = 'choose'; // 'choose' | 'confirm'
+let setPinStep = 'choose';
 let setPinFirst = '';
-
 let setPinTarget = 'settings';
 
 function openSetPin(target) {
@@ -1225,14 +1103,14 @@ function openSetPin(target) {
     ? 'Choose a Front Desk PIN' : 'Choose a Settings PIN';
   updateDots('set-pin-dots', 0);
   document.getElementById('set-pin-overlay').classList.remove('hidden');
-  setTimeout(() => { const i = document.getElementById('setpin-ghost-input'); if(i) i.focus(); }, 100);
 }
+window.openSetPin = openSetPin;
 
 function cancelSetPin() {
   document.getElementById('set-pin-overlay').classList.add('hidden');
-  activePinScreen = null;
   setPinEntry = '';
 }
+window.cancelSetPin = cancelSetPin;
 
 function setPinPress(val) {
   if (val === 'clear') { setPinEntry = ''; updateDots('set-pin-dots', 0); return; }
@@ -1252,7 +1130,6 @@ function setPinPress(val) {
         const storageKey = setPinTarget === 'frontdesk' ? 'frontdesk_pin' : 'settings_pin';
         localStorage.setItem(storageKey, setPinEntry);
         document.getElementById('set-pin-overlay').classList.add('hidden');
-        activePinScreen = null;
         updatePinMgmtUI();
         const label = setPinTarget === 'frontdesk' ? 'Front Desk' : 'Settings';
         alert('✅ ' + label + ' PIN set to ' + setPinEntry + ' — write it down somewhere safe!');
@@ -1271,6 +1148,7 @@ function setPinPress(val) {
     }
   }
 }
+window.setPinPress = setPinPress;
 
 function removePin(target) {
   const label = target === 'frontdesk' ? 'Front Desk' : 'Settings';
@@ -1279,14 +1157,36 @@ function removePin(target) {
   localStorage.removeItem(key);
   updatePinMgmtUI();
 }
+window.removePin = removePin;
 
-// ── Init ──
-if (initClient()) {
-  showBanner(false);
-} else {
-  showBanner(true);
+function ghostInput(el, screen) {
+  const digits = el.value.replace(/\D/g, '');
+  el.value = digits;
+  const last = digits[digits.length - 1];
+  if (!last) return;
+  if (screen === 'fd') {
+    const cur = fdPinEntry.length;
+    if (digits.length > cur) fdPinPress(last);
+    if (digits.length === 0) { fdPinEntry = ''; updateDots('fd-pin-dots', 0); }
+  } else if (screen === 'settings') {
+    const cur = pinEntry.length;
+    if (digits.length > cur) pinPress(last);
+    if (digits.length === 0) { pinEntry = ''; updateDots('pin-dots', 0); }
+  } else if (screen === 'setpin') {
+    const cur = setPinEntry.length;
+    if (digits.length > cur) setPinPress(last);
+    if (digits.length === 0) { setPinEntry = ''; updateDots('set-pin-dots', 0); }
+  }
 }
+window.ghostInput = ghostInput;
+
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Backspace') return;
+  const fd = document.getElementById('fd-ghost-input');
+  const st = document.getElementById('settings-ghost-input');
+  if (document.activeElement === fd) { fdPinPress('back'); fd.value = fdPinEntry; }
+  else if (document.activeElement === st) { pinPress('back'); st.value = pinEntry; }
+}, false);
 </script>
-<div id="notif-container"></div>
 </body>
 </html>
