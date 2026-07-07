@@ -211,6 +211,45 @@
   }
   .toast.show { display: flex; }
 
+
+  /* ── Teacher request status ── */
+  .teacher-status-panel {
+    margin-top: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .teacher-status-panel.show { display: flex; }
+  .teacher-status-card {
+    padding: 13px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .teacher-status-card.received { border-left: 4px solid var(--blue); }
+  .teacher-status-card.resolved { border-left: 4px solid var(--green); opacity: .85; }
+  .teacher-status-card.cancelled { border-left: 4px solid var(--text3); opacity: .7; }
+  .teacher-status-icon { font-size: 22px; flex-shrink: 0; }
+  .teacher-status-body { flex: 1; min-width: 0; }
+  .teacher-status-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .teacher-status-msg { font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .teacher-status-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .cancel-request-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--red);
+    background: transparent;
+    color: var(--red-text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .cancel-request-btn:hover { background: var(--red-bg); }
+
   /* ── FRONT DESK VIEW ── */
   .fd-header {
     display: flex;
@@ -486,6 +525,12 @@
   <div class="toast" id="toast">
     ✅ <span id="toast-text">Request sent to front desk!</span>
   </div>
+
+  <div class="teacher-status-panel" id="teacher-status-panel">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px;">Your recent request</div>
+    <div id="teacher-status-list"></div>
+  </div>
+
 </div>
 
 <!-- ── FRONT DESK VIEW ── -->
@@ -727,13 +772,38 @@ function prefill(text) {
 }
 window.prefill = prefill;
 
+function getTeacherRequestIds() {
+  try { return JSON.parse(localStorage.getItem('teacher_request_ids') || '[]'); }
+  catch (e) { return []; }
+}
+
+function saveTeacherRequestId(id) {
+  const ids = getTeacherRequestIds().filter(x => x !== id);
+  ids.unshift(id);
+  localStorage.setItem('teacher_request_ids', JSON.stringify(ids.slice(0, 20)));
+}
+
+function statusLabel(req) {
+  if (req.cancelled) return { key: 'cancelled', icon: '✕', title: 'Cancelled', note: 'This request was cancelled.' };
+  if (req.resolved) return { key: 'resolved', icon: '✅', title: 'Resolved', note: 'Front desk marked this request as done.' };
+  return { key: 'received', icon: '📨', title: 'Received', note: "We're working on your request." };
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[ch]));
+}
+
 async function sendReq(msg) {
   const room = document.getElementById('room-select').value;
   try {
-    await push(requestsRef, { room, message: msg, resolved: false, created_at: Date.now() });
-    showToast(`"${msg}" sent to front desk!`);
+    const result = await push(requestsRef, { room, message: msg, resolved: false, cancelled: false, created_at: Date.now() });
+    saveTeacherRequestId(result.key);
+    showToast(`✅ Received — we're working on "${msg}".`);
     document.getElementById('quick-panel').classList.remove('open');
     playChime();
+    updateTeacherStatus(latestRequests);
   } catch (e) {
     alert('Error sending request: ' + e.message);
   }
@@ -758,6 +828,53 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+function updateTeacherStatus(data) {
+  const panel = document.getElementById('teacher-status-panel');
+  const list = document.getElementById('teacher-status-list');
+  if (!panel || !list) return;
+
+  const ids = getTeacherRequestIds();
+  const requestMap = new Map((data || []).map(r => [r.id, r]));
+  const tracked = ids.map(id => requestMap.get(id)).filter(Boolean).slice(0, 3);
+
+  if (tracked.length === 0) {
+    panel.classList.remove('show');
+    list.innerHTML = '';
+    return;
+  }
+
+  panel.classList.add('show');
+  list.innerHTML = tracked.map(req => {
+    const st = statusLabel(req);
+    const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const canCancel = !req.resolved && !req.cancelled;
+    return `
+      <div class="teacher-status-card ${st.key}">
+        <div class="teacher-status-icon">${st.icon}</div>
+        <div class="teacher-status-body">
+          <div class="teacher-status-title">${st.title}</div>
+          <div class="teacher-status-msg">${escapeHtml(req.message)}</div>
+          <div class="teacher-status-time">${escapeHtml(req.room)} · ${timeStr} · ${st.note}</div>
+        </div>
+        ${canCancel ? `<button class="cancel-request-btn" onclick="cancelTeacherRequest('${req.id}', this)">Cancel</button>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+async function cancelTeacherRequest(id, btn) {
+  if (!confirm('Cancel this help request?')) return;
+  if (btn) { btn.textContent = '…'; btn.disabled = true; }
+  try {
+    await update(ref(db, 'requests/' + id), { cancelled: true, cancelled_at: Date.now(), resolved: false });
+    showToast('Request cancelled.');
+  } catch (e) {
+    alert('Error cancelling request: ' + e.message);
+    if (btn) { btn.textContent = 'Cancel'; btn.disabled = false; }
+  }
+}
+window.cancelTeacherRequest = cancelTeacherRequest;
 
 document.getElementById('custom-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendCustom();
@@ -898,15 +1015,17 @@ function snapshotToArray(val) {
 
 function renderRequests(data) {
   latestRequests = data;
+  updateTeacherStatus(data);
+  const activeData = data.filter(r => !r.cancelled);
   const list = document.getElementById('req-list');
   const empty = document.getElementById('empty-state');
   const badge = document.getElementById('pending-badge');
 
-  const pending = data.filter(r => !r.resolved).length;
+  const pending = activeData.filter(r => !r.resolved).length;
   badge.textContent = pending === 0 ? '0 pending' : `${pending} pending`;
   badge.className = 'badge' + (pending === 0 ? ' zero' : '');
 
-  if (data.length === 0) {
+  if (activeData.length === 0) {
     empty.style.display = 'block';
     list.querySelectorAll('.req-card').forEach(e => e.remove());
     return;
@@ -914,10 +1033,10 @@ function renderRequests(data) {
   empty.style.display = 'none';
 
   list.querySelectorAll('.req-card').forEach(card => {
-    if (!data.find(r => r.id === card.dataset.id)) card.remove();
+    if (!activeData.find(r => r.id === card.dataset.id)) card.remove();
   });
 
-  data
+  activeData
     .sort((a, b) => b.created_at - a.created_at)
     .forEach(req => {
       let card = list.querySelector(`[data-id="${req.id}"]`);
@@ -985,7 +1104,7 @@ function initRealtime() {
 }
 
 function checkReminders() {
-  const pending = latestRequests.filter(r => !r.resolved).sort((a, b) => a.created_at - b.created_at);
+  const pending = latestRequests.filter(r => !r.resolved && !r.cancelled).sort((a, b) => a.created_at - b.created_at);
   if (pending.length === 0) return;
   const oldest = pending[0];
   const ageMin = Math.floor((Date.now() - oldest.created_at) / 60000);
@@ -1035,10 +1154,10 @@ async function clearOldRequests() {
 }
 
 async function clearResolved() {
-  if (!confirm('Remove all resolved requests from the list?')) return;
+  if (!confirm('Remove all resolved/cancelled requests from the list?')) return;
   const updates = {};
   latestRequests.forEach(r => {
-    if (r.resolved) updates['requests/' + r.id] = null;
+    if (r.resolved || r.cancelled) updates['requests/' + r.id] = null;
   });
   if (Object.keys(updates).length === 0) return;
   try {
