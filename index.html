@@ -313,6 +313,12 @@
   .notify-btn:hover { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
   .notify-btn.enabled { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
   .notify-btn.blocked { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
+  .notify-status {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
 
   .empty {
     text-align: center;
@@ -566,9 +572,11 @@
     <h3>🔥 Database</h3>
     <p>This page is connected to Firebase Realtime Database. The connection details are already built into the page's code, so there's nothing to paste here — it'll work the same on any computer that opens this page.</p>
     <span class="live-dot" id="settings-live-label">Connecting…</span>
-    <div style="margin-top:12px;">
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
       <button class="notify-btn desktop-notify-btn" onclick="enableDesktopNotifications()">🔔 Enable desktop notifications</button>
+      <button class="notify-btn" onclick="testDesktopNotification()">Test notification</button>
     </div>
+    <div class="notify-status" id="notify-status"></div>
   </div>
 
   <div class="settings-card settings-pin-section">
@@ -668,8 +676,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+  // Remember the last open page on this browser/device.
+  // On reload, Classroom stays default unless Front Desk was the last page.
+  localStorage.setItem('last_tab', tab);
+
   if (tab !== 'settings') { settingsPinUnlocked = false; }
-  if (tab !== 'frontdesk') { fdPinUnlocked = false; fdPinEntry = ''; }
+  if (tab !== 'frontdesk') { fdPinEntry = ''; }
   document.getElementById('view-' + tab).classList.add('active');
   if (tab === 'frontdesk') { initFdPinOverlay(); }
   if (tab === 'settings') { if (!settingsPinUnlocked) initPinOverlay(); }
@@ -757,9 +770,20 @@ let knownIds = new Set();
 let latestRequests = []; // cached snapshot, used by the reminder timer
 
 // Browser desktop notifications for when this page/tab is not active.
-// Note: browsers require the user to click an "Enable notifications" button once.
+// Browsers require the user to click an "Enable notifications" button once.
 function isPageInactive() {
+  // document.hidden is the most reliable signal for "another browser tab is open".
+  // document.hasFocus() covers the case where another app/window is active.
   return document.hidden || !document.hasFocus();
+}
+
+function notificationSupportMessage() {
+  if (!('Notification' in window)) return 'Browser notifications are not supported in this browser.';
+  if (location.protocol === 'file:') return 'Notifications may be blocked from local file:// pages. Use localhost or an https website for the most reliable result.';
+  if (!window.isSecureContext) return 'Notifications require a secure context. Use https or localhost.';
+  if (Notification.permission === 'denied') return 'Notifications are blocked in browser settings for this site.';
+  if (Notification.permission === 'granted') return 'Notifications are enabled. Leave this tab or window, then send a request from another tab/device to test.';
+  return 'Notifications are not enabled yet.';
 }
 
 function updateDesktopNotifyUI() {
@@ -782,11 +806,15 @@ function updateDesktopNotifyUI() {
       btn.disabled = false;
     }
   });
+
+  const status = document.getElementById('notify-status');
+  if (status) status.textContent = notificationSupportMessage();
 }
 
 async function enableDesktopNotifications() {
   if (!('Notification' in window)) {
     alert('This browser does not support desktop notifications.');
+    updateDesktopNotifyUI();
     return;
   }
 
@@ -796,43 +824,68 @@ async function enableDesktopNotifications() {
     return;
   }
 
-  const permission = await Notification.requestPermission();
+  const permission = Notification.permission === 'granted'
+    ? 'granted'
+    : await Notification.requestPermission();
+
   updateDesktopNotifyUI();
 
   if (permission === 'granted') {
-    const test = new Notification('School Help Desk notifications enabled', {
-      body: 'You will get a popup when a new request arrives while this tab is not active.',
-      tag: 'helpdesk-notifications-enabled'
-    });
-    test.onclick = () => {
-      window.focus();
-      switchTab('frontdesk');
-      test.close();
-    };
-    setTimeout(() => test.close(), 4000);
+    showBrowserNotification(
+      'School Help Desk notifications enabled',
+      'You will get a popup when a new request arrives while this tab is not active.',
+      'helpdesk-notifications-enabled',
+      true
+    );
   }
 }
 window.enableDesktopNotifications = enableDesktopNotifications;
 
-function showBrowserNotification(title, body, tag) {
-  if (!('Notification' in window)) return;
-  if (Notification.permission !== 'granted') return;
-  if (!isPageInactive()) return;
+function showBrowserNotification(title, body, tag, force = false) {
+  if (!('Notification' in window)) return false;
+  if (Notification.permission !== 'granted') return false;
+  if (!force && !isPageInactive()) return false;
 
-  const n = new Notification(title, {
-    body,
-    tag,
-    requireInteraction: false
-  });
+  try {
+    const n = new Notification(title, {
+      body,
+      tag,
+      requireInteraction: false,
+      silent: false
+    });
 
-  n.onclick = () => {
-    window.focus();
-    switchTab('frontdesk');
-    n.close();
-  };
+    n.onclick = () => {
+      window.focus();
+      switchTab('frontdesk');
+      n.close();
+    };
 
-  setTimeout(() => n.close(), 10000);
+    setTimeout(() => n.close(), 10000);
+    return true;
+  } catch (e) {
+    console.warn('Desktop notification failed:', e);
+    return false;
+  }
 }
+
+function testDesktopNotification() {
+  if (!('Notification' in window)) {
+    alert('This browser does not support desktop notifications.');
+    return;
+  }
+  if (Notification.permission !== 'granted') {
+    alert('Click Enable notifications first. Current permission: ' + Notification.permission);
+    return;
+  }
+  const shown = showBrowserNotification(
+    'School Help Desk test notification',
+    'Click this popup to jump to the Front Desk tab.',
+    'helpdesk-test-notification',
+    true
+  );
+  if (!shown) alert('The browser did not show the notification. Check OS/browser notification settings.');
+}
+window.testDesktopNotification = testDesktopNotification;
 
 window.addEventListener('focus', updateDesktopNotifyUI);
 document.addEventListener('visibilitychange', updateDesktopNotifyUI);
@@ -1076,19 +1129,32 @@ let settingsPinUnlocked = false;
 function getStoredPin() { return localStorage.getItem('settings_pin') || ''; }
 function getFdPin() { return localStorage.getItem('frontdesk_pin') || ''; }
 
+const FD_UNLOCK_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
+function getFdUnlockUntil() { return Number(localStorage.getItem('frontdesk_unlocked_until') || 0); }
+function isFdUnlockActive() { return Date.now() < getFdUnlockUntil(); }
+function rememberFdUnlock() {
+  localStorage.setItem('frontdesk_unlocked_until', String(Date.now() + FD_UNLOCK_DURATION_MS));
+}
+function clearFdUnlock() { localStorage.removeItem('frontdesk_unlocked_until'); }
+
 let fdPinEntry = '';
 let fdPinUnlocked = false;
 
 function initFdPinOverlay() {
   const pin = getFdPin();
   const overlay = document.getElementById('fd-pin-overlay');
-  if (!pin) {
+
+  // If no PIN exists, or this browser/device unlocked Front Desk within
+  // the last 8 hours, do not ask for the PIN again.
+  if (!pin || isFdUnlockActive()) {
     overlay.classList.add('hidden');
     fdPinUnlocked = true;
     initRealtime();
   } else {
     overlay.classList.remove('hidden');
     fdPinUnlocked = false;
+    fdPinEntry = '';
+    updateDots('fd-pin-dots', 0);
     setTimeout(() => { const i = document.getElementById('fd-ghost-input'); if(i) i.focus(); }, 100);
   }
 }
@@ -1112,6 +1178,7 @@ function fdPinPress(val) {
     const stored = getFdPin();
     if (fdPinEntry === stored) {
       fdPinUnlocked = true;
+      rememberFdUnlock();
       document.getElementById('fd-pin-overlay').classList.add('hidden');
       fdPinEntry = '';
       updateDots('fd-pin-dots', 0);
@@ -1236,6 +1303,7 @@ function setPinPress(val) {
       if (setPinEntry === setPinFirst) {
         const storageKey = setPinTarget === 'frontdesk' ? 'frontdesk_pin' : 'settings_pin';
         localStorage.setItem(storageKey, setPinEntry);
+        if (setPinTarget === 'frontdesk') clearFdUnlock();
         document.getElementById('set-pin-overlay').classList.add('hidden');
         updatePinMgmtUI();
         const label = setPinTarget === 'frontdesk' ? 'Front Desk' : 'Settings';
@@ -1262,6 +1330,7 @@ function removePin(target) {
   if (!confirm('Remove the ' + label + ' PIN? Anyone will be able to open it.')) return;
   const key = target === 'frontdesk' ? 'frontdesk_pin' : 'settings_pin';
   localStorage.removeItem(key);
+  if (target === 'frontdesk') clearFdUnlock();
   updatePinMgmtUI();
 }
 window.removePin = removePin;
@@ -1294,6 +1363,17 @@ document.addEventListener('keydown', function(e) {
   if (document.activeElement === fd) { fdPinPress('back'); fd.value = fdPinEntry; }
   else if (document.activeElement === st) { pinPress('back'); st.value = pinEntry; }
 }, false);
+
+// Restore Front Desk after reload if it was the last open page.
+// If it was unlocked within the last 8 hours, it opens without asking for the PIN.
+if (localStorage.getItem('last_tab') === 'frontdesk') {
+  switchTab('frontdesk');
+}
+
+// Start listening immediately so desktop notifications work even if the Front Desk tab
+// has not been opened yet in this browser session.
+initRealtime();
+
 </script>
 </body>
 </html>
