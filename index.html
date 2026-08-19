@@ -7,7 +7,7 @@
 <link rel="icon" href="favicon (3).ico">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --bg: #f5f4f0;
     --surface: #ffffff;
@@ -33,11 +33,11 @@
     --radius-lg: 14px;
     font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
   }
-
+ 
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
-
+ 
   body { background: var(--bg); color: var(--text); min-height: 100vh; }
-
+ 
   /* Header */
   header {
     background: var(--surface);
@@ -50,7 +50,7 @@
   }
   .logo { font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
-
+ 
   /* Tab bar */
   .tabs { display: flex; gap: 4px; }
   .tab-btn {
@@ -70,11 +70,11 @@
     color: var(--text);
   }
   .tab-btn:hover:not(.active) { background: var(--surface2); }
-
+ 
   /* Views */
   .view { display: none; padding: 28px 24px; max-width: 640px; margin: 0 auto; }
   .view.active { display: block; }
-
+ 
   /* ── CLASSROOM VIEW ── */
   .room-row {
     display: flex;
@@ -94,7 +94,7 @@
     color: var(--text);
     cursor: pointer;
   }
-
+ 
   .help-trigger {
     width: 100%;
     padding: 28px 20px;
@@ -113,10 +113,10 @@
   .help-trigger .big-icon { font-size: 36px; line-height: 1; }
   .help-trigger .label { font-size: 17px; font-weight: 600; color: var(--text); }
   .help-trigger .sub { font-size: 13px; color: var(--text2); }
-
+ 
   .quick-panel { display: none; margin-bottom: 16px; }
   .quick-panel.open { display: block; }
-
+ 
   .quick-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
@@ -139,7 +139,7 @@
   }
   .quick-item:hover { border-color: var(--blue); background: var(--blue-bg); color: var(--blue-text); }
   .quick-item .qi { font-size: 18px; }
-
+ 
   .custom-row { display: flex; gap: 8px; }
   .custom-row input {
     flex: 1;
@@ -182,7 +182,7 @@
     0%,100% { box-shadow: 0 0 0 0 rgba(226,75,74,0.3); }
     50%      { box-shadow: 0 0 0 7px rgba(226,75,74,0); }
   }
-
+ 
   .send-btn {
     padding: 9px 18px;
     border-radius: var(--radius);
@@ -196,7 +196,7 @@
     transition: all .12s;
   }
   .send-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
-
+ 
   .toast {
     margin-top: 12px;
     padding: 11px 14px;
@@ -211,8 +211,8 @@
     gap: 8px;
   }
   .toast.show { display: flex; }
-
-
+ 
+ 
   /* ── Teacher request status ── */
   .teacher-status-panel {
     margin-top: 14px;
@@ -250,15 +250,24 @@
     white-space: nowrap;
   }
   .cancel-request-btn:hover { background: var(--red-bg); }
-
+ 
   /* ── FRONT DESK VIEW ── */
   .fd-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
+    min-height: 28px;
   }
-  .fd-title { font-size: 16px; font-weight: 600; }
+  .fd-title { font-size: 16px; font-weight: 700; }
+  .fd-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    margin-bottom: 18px;
+    min-height: 30px;
+  }
   .badge {
     font-size: 12px;
     font-weight: 600;
@@ -269,7 +278,7 @@
     border: 1px solid var(--red);
   }
   .badge.zero { background: var(--surface2); color: var(--text2); border-color: var(--border); }
-
+ 
   .live-dot {
     display: inline-flex;
     align-items: center;
@@ -286,7 +295,7 @@
   }
   .live-dot.offline::before { background: var(--red); animation: none; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.85)} }
-
+ 
   .req-list { display: flex; flex-direction: column; gap: 8px; }
   .req-card {
     padding: 13px 16px;
@@ -303,13 +312,13 @@
   .req-card.urgent .req-room { color: var(--red-text); }
   .req-card.new-anim { animation: slidein .3s ease; }
   @keyframes slidein { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
-
+ 
   .req-icon { font-size: 22px; flex-shrink: 0; }
   .req-body { flex: 1; min-width: 0; }
   .req-room { font-size: 11px; color: var(--text3); margin-bottom: 2px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
   .req-text { font-size: 14px; font-weight: 500; color: var(--text); }
   .req-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
+ 
   .resolve-btn {
     padding: 6px 14px;
     border-radius: 8px;
@@ -325,7 +334,7 @@
   }
   .resolve-btn:hover { background: var(--green-bg); border-color: var(--green); color: var(--green-text); }
   .resolve-btn.done { background: var(--green-bg); border-color: var(--green); color: var(--green-text); cursor: default; }
-
+ 
   .clear-btn {
     padding: 6px 12px;
     border-radius: 8px;
@@ -338,7 +347,7 @@
     transition: all .12s;
   }
   .clear-btn:hover { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
-
+ 
   .notify-btn {
     padding: 6px 12px;
     border-radius: 8px;
@@ -359,7 +368,7 @@
     margin-top: 8px;
     line-height: 1.4;
   }
-
+ 
   .empty {
     text-align: center;
     padding: 48px 0;
@@ -367,7 +376,7 @@
     font-size: 14px;
   }
   .empty .e-icon { font-size: 32px; margin-bottom: 10px; }
-
+ 
   /* ── SETTINGS VIEW ── */
   .settings-card {
     background: var(--surface);
@@ -390,9 +399,9 @@
     transition: opacity .12s;
   }
   .save-btn:hover { opacity: .85; }
-
+ 
   #help-btn-wrap:hover { background: var(--blue-bg) !important; border-color: var(--blue) !important; }
-
+ 
   /* ── Notification popup ── */
   .notif-popup {
     position: fixed;
@@ -424,7 +433,7 @@
   .notif-msg { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .notif-time { font-size: 11px; color: var(--text3); margin-top: 3px; }
   .notif-close { font-size: 16px; color: var(--text3); background:none; border:none; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
-
+ 
   /* ── PIN overlay ── */
   .pin-overlay {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -464,10 +473,179 @@
     color: var(--blue); font-family: monospace;
     padding: 10px 0 4px;
   }
+ 
+  /* ── DAILY CHECKLIST ── */
+  .checklist-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    cursor: pointer;
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: border-color .12s, background .12s;
+  }
+  .checklist-toggle-row:hover { border-color: var(--blue); background: var(--blue-bg); }
+  .checklist-toggle-left { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .checklist-toggle-right { display: flex; align-items: center; gap: 10px; }
+  .checklist-progress-badge {
+    font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
+    background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  }
+  .checklist-progress-badge.done { background: var(--green-bg); color: var(--green-text); border-color: var(--green); }
+  .checklist-chevron { font-size: 12px; color: var(--text3); transition: transform .15s; }
+  .checklist-chevron.open { transform: rotate(180deg); }
+ 
+  .checklist-panel { display: none; margin-bottom: 16px; }
+  .checklist-panel.open { display: block; }
+ 
+  .checklist-section { margin-bottom: 14px; }
+  .checklist-section:last-child { margin-bottom: 0; }
+  .checklist-section-title-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 6px; padding-left: 2px;
+  }
+  .checklist-section-title {
+    font-size: 11px; font-weight: 700; color: var(--text3);
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .checklist-section-note {
+    font-size: 11.5px; font-weight: 500; font-style: italic;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+  .checklist-items { display: flex; flex-direction: column; gap: 6px; }
+  .checklist-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color .12s, background .12s, opacity .12s;
+  }
+  .checklist-item:hover { border-color: var(--blue); }
+  .checklist-item.checked { background: var(--green-bg); border-color: var(--green); }
+  .checklist-item.checked .checklist-item-text { color: var(--green-text); text-decoration: line-through; opacity: .75; }
+  .checklist-item-text { font-size: 13.5px; color: var(--text); line-height: 1.4; }
+ 
+  .checklist-item { justify-content: space-between; }
+  .checklist-item-text { flex: 1; margin-right: 10px; }
+ 
+  /* ── Front Desk two-column layout ── */
+  #view-frontdesk { max-width: 1040px; }
+  .checklist-col-header {
+    display: flex; align-items: center;
+    margin-bottom: 12px;
+    min-height: 28px;
+  }
+  .fd-date-label { font-size: 16px; font-weight: 700; color: var(--text); }
+  .checklist-reset-row {
+    display: flex; align-items: center;
+    margin-bottom: 18px;
+    min-height: 30px;
+  }
+  .fd-columns { display: flex; gap: 24px; align-items: flex-start; }
+  .fd-col-left { flex: 1 1 380px; min-width: 300px; }
+  .fd-col-right { flex: 1 1 380px; min-width: 300px; }
+  @media (max-width: 860px) {
+    .fd-columns { flex-direction: column; }
+  }
+ 
+  .checklist-reset-btn {
+    padding: 6px 13px; border-radius: 8px; border: 1px solid var(--border2);
+    background: var(--surface); font-size: 12px; font-weight: 500; color: var(--text2);
+    cursor: pointer; transition: all .12s; white-space: nowrap; flex-shrink: 0;
+  }
+  .checklist-reset-btn:hover { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
+ 
+  .assignee-select { position: relative; flex-shrink: 0; }
+  .assignee-trigger {
+    min-width: 96px; max-width: 190px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    font-size: 12px; font-weight: 500;
+    color: var(--text3);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    transition: border-color .12s;
+  }
+  .assignee-trigger:hover { border-color: var(--blue); }
+  .assignee-chip-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; flex: 1; min-width: 0; }
+  .assignee-placeholder { color: var(--text3); }
+  .assignee-pill {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; color: #2a2a26;
+    line-height: 1.6; white-space: nowrap;
+  }
+  .assignee-pill.no-need { color: #4a4a46; }
+  .assignee-caret { font-size: 9px; flex-shrink: 0; opacity: .7; color: var(--text3); }
+  .assignee-dropdown {
+    position: absolute; top: calc(100% + 6px); right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 130px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.14);
+    z-index: 50;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .assignee-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .assignee-option:hover { background: var(--surface2); }
+  .assignee-option input { pointer-events: none; }
+  .assignee-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0; display: inline-block;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+ 
+  /* ── Quick assign (bulk mark) ── */
+  .quick-assign-bar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 24px; padding: 10px 12px;
+    border: 1px dashed var(--border2); border-radius: var(--radius);
+    background: var(--surface2);
+  }
+  .quick-assign-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+  .quick-assign-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .quick-assign-btn {
+    padding: 5px 13px; border-radius: 999px;
+    border: 1.5px solid var(--border2);
+    background: var(--surface);
+    font-size: 12px; font-weight: 700; color: var(--text2);
+    cursor: pointer; transition: all .12s;
+  }
+  .quick-assign-btn:hover { border-color: var(--qa-color, var(--blue)); }
+  .quick-assign-btn.active { background: var(--qa-color); border-color: var(--qa-color); color: #2a2a26; }
+  .quick-assign-exit {
+    padding: 5px 11px; border-radius: 999px;
+    border: 1px solid var(--border2); background: transparent;
+    font-size: 12px; font-weight: 500; color: var(--text2);
+    cursor: pointer; transition: all .12s;
+  }
+  .quick-assign-exit:hover { background: var(--red-bg); border-color: var(--red); color: var(--red-text); }
+  .quick-assign-hint { font-size: 11.5px; color: var(--text2); width: 100%; }
+  .checklist-item.quick-target { cursor: pointer; }
+  .checklist-item.quick-target:hover { border-color: var(--blue); background: var(--blue-bg); }
+ 
+  .eod-warning-popup { border-left-color: var(--amber) !important; }
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div class="logo">
     <div class="logo-dot"></div>
@@ -479,7 +657,7 @@
     <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
   </div>
 </header>
-
+ 
 <!-- ── CLASSROOM VIEW ── -->
 <div id="view-classroom" class="view active">
   <div class="room-row">
@@ -493,7 +671,7 @@
       <option>Room F</option>
     </select>
   </div>
-
+ 
   <button id="help-btn-wrap" onclick="toggleQuick()" style="
       width:100%; padding:32px 20px; margin-bottom:4px;
       border-radius:18px; border:1px solid var(--border);
@@ -504,7 +682,7 @@
     <div style="font-size:17px; font-weight:700; color:var(--text);">Request Help from Front Desk</div>
     <div style="font-size:13px; color:var(--text2);">Tap to choose what you need</div>
   </button>
-
+ 
   <div class="quick-panel" id="quick-panel">
     <div class="quick-grid">
       <button class="quick-item" onclick="prefill('Printouts / copies')"><span class="qi">🖨️</span> Printouts</button>
@@ -522,18 +700,18 @@
       🚨 Need it ASAP? <span id="asap-label">Tap to mark urgent</span>
     </button>
   </div>
-
+ 
   <div class="toast" id="toast">
     ✅ <span id="toast-text">Request sent to front desk!</span>
   </div>
-
+ 
   <div class="teacher-status-panel" id="teacher-status-panel">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px;">Your recent request</div>
     <div id="teacher-status-list"></div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- ── FRONT DESK VIEW ── -->
 <div id="view-frontdesk" class="view" style="position:relative; min-height:400px;">
   <div class="pin-overlay" id="fd-pin-overlay" tabindex="0">
@@ -564,26 +742,51 @@
       <button class="pin-key" onclick="fdPinPress('clear')">✕</button>
     </div>
   </div>
-  <div class="fd-header">
-    <span class="fd-title">Incoming requests</span>
-    <div style="display:flex;align-items:center;gap:12px">
-      <span class="live-dot" id="live-label">Connecting…</span>
-      <button class="notify-btn desktop-notify-btn" onclick="enableDesktopNotifications()">🔔 Enable notifications</button>
-      <button class="clear-btn" onclick="clearResolved()">🗑 Clear resolved</button>
-      <span class="badge zero" id="pending-badge">0 pending</span>
+  <div class="fd-columns">
+    <div class="fd-col-left">
+      <div class="checklist-col-header">
+        <div class="fd-date-label" id="checklist-date-label"></div>
+      </div>
+      <div class="checklist-reset-row">
+        <button class="checklist-reset-btn" onclick="resetChecklist()">↺ Reset today's checklist</button>
+      </div>
+      <div class="checklist-toggle-row" onclick="toggleChecklist()">
+        <div class="checklist-toggle-left">📋 Daily Checklist</div>
+        <div class="checklist-toggle-right">
+          <span class="checklist-progress-badge" id="checklist-progress-badge">0/0 done</span>
+          <span class="checklist-chevron" id="checklist-chevron">▼</span>
+        </div>
+      </div>
+      <div class="checklist-panel" id="checklist-panel">
+        <div id="quick-assign-bar" class="quick-assign-bar"></div>
+        <div id="checklist-sections"></div>
+      </div>
     </div>
-  </div>
-  <div class="req-list" id="req-list">
-    <div class="empty" id="empty-state">
-      <div class="e-icon">📭</div>
-      No requests yet — all clear!
+ 
+    <div class="fd-col-right">
+      <div class="fd-header">
+        <span class="fd-title">Incoming requests</span>
+      </div>
+      <div class="fd-controls-row">
+        <span class="live-dot" id="live-label">Connecting…</span>
+        <button class="notify-btn desktop-notify-btn" onclick="enableDesktopNotifications()">🔔 Enable notifications</button>
+        <button class="clear-btn" onclick="clearResolved()">🗑 Clear resolved</button>
+        <span class="badge zero" id="pending-badge">0 pending</span>
+      </div>
+ 
+      <div class="req-list" id="req-list">
+        <div class="empty" id="empty-state">
+          <div class="e-icon">📭</div>
+          No requests yet — all clear!
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
+ 
 <!-- ── SETTINGS VIEW ── -->
 <div id="view-settings" class="view" style="position:relative; min-height:400px;">
-
+ 
   <!-- PIN lock overlay -->
   <div class="pin-overlay" id="pin-overlay" tabindex="0">
     <div class="pin-title" id="pin-title">Enter PIN to access Settings</div>
@@ -613,7 +816,7 @@
       <button class="pin-key" onclick="pinPress('clear')">✕</button>
     </div>
   </div>
-
+ 
   <div class="settings-card">
     <h3>🔥 Database</h3>
     <p>This page is connected to Firebase Realtime Database. The connection details are already built into the page's code, so there's nothing to paste here — it'll work the same on any computer that opens this page.</p>
@@ -624,7 +827,7 @@
     </div>
     <div class="notify-status" id="notify-status"></div>
   </div>
-
+ 
   <div class="settings-card settings-pin-section">
     <h3>🔒 Settings PIN</h3>
     <p>Set a 4-digit PIN to prevent teachers from accessing this Settings page. Keep it somewhere safe!</p>
@@ -635,7 +838,7 @@
     <button class="save-btn" onclick="openSetPin('settings')" style="background:var(--surface); color:var(--text); border:1px solid var(--border2);">Generate new PIN</button>
     <button class="save-btn" onclick="removePin('settings')" id="remove-pin-btn" style="background:var(--surface); color:var(--red-text); border:1px solid var(--red); margin-left:8px; display:none;">Remove PIN</button>
   </div>
-
+ 
   <div class="settings-card settings-pin-section">
     <h3>🏢 Front Desk PIN</h3>
     <p>Set a separate 4-digit PIN for the Front Desk tab. Use a different code from Settings so only front desk staff can access it.</p>
@@ -646,7 +849,7 @@
     <button class="save-btn" onclick="openSetPin('frontdesk')" style="background:var(--surface); color:var(--text); border:1px solid var(--border2);">Generate new PIN</button>
     <button class="save-btn" onclick="removePin('frontdesk')" id="remove-fd-pin-btn" style="background:var(--surface); color:var(--red-text); border:1px solid var(--red); margin-left:8px; display:none;">Remove PIN</button>
   </div>
-
+ 
   <!-- Set PIN modal -->
   <div class="pin-overlay hidden" id="set-pin-overlay" style="background:rgba(0,0,0,0.35);">
     <div style="background:var(--surface); border-radius:var(--radius-lg); padding:28px; display:flex; flex-direction:column; align-items:center; gap:16px; border:1px solid var(--border);">
@@ -674,20 +877,20 @@
       <button class="pin-key wide" onclick="cancelSetPin()">Cancel</button>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <div id="notif-container"></div>
-
+ 
 <script type="module">
 // ══════════════════════════════════════════════
 //  FIREBASE SETUP
 // ══════════════════════════════════════════════
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
-  getDatabase, ref, push, onValue, update, remove
+  getDatabase, ref, push, onValue, update, remove, set
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
-
+ 
 const firebaseConfig = {
   apiKey: "AIzaSyCrdjwQg-o5fSY-6V0pTizzdMuBMdnuWyE",
   authDomain: "fd-push-for-help.firebaseapp.com",
@@ -698,11 +901,11 @@ const firebaseConfig = {
   appId: "1:725292870562:web:5a4a902bf0a9f68150e0fb",
   measurementId: "G-C2DPQ9TKLM"
 };
-
+ 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const requestsRef = ref(db, 'requests');
-
+ 
 // Live connection indicator (Firebase's built-in special path)
 onValue(ref(db, '.info/connected'), (snap) => {
   const connected = snap.val() === true;
@@ -714,7 +917,7 @@ onValue(ref(db, '.info/connected'), (snap) => {
     el.classList.toggle('offline', !connected);
   });
 });
-
+ 
 // ══════════════════════════════════════════════
 //  UI: TAB SWITCHING
 // ══════════════════════════════════════════════
@@ -722,11 +925,11 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
-
+ 
   // Remember the last open page on this browser/device.
   // On reload, Classroom stays default unless Front Desk was the last page.
   localStorage.setItem('last_tab', tab);
-
+ 
   if (tab !== 'settings') { settingsPinUnlocked = false; }
   if (tab !== 'frontdesk') { fdPinEntry = ''; }
   document.getElementById('view-' + tab).classList.add('active');
@@ -734,7 +937,7 @@ function switchTab(tab) {
   if (tab === 'settings') { if (!settingsPinUnlocked) initPinOverlay(); }
 }
 window.switchTab = switchTab;
-
+ 
 // ══════════════════════════════════════════════
 //  CLASSROOM: send a request
 // ══════════════════════════════════════════════
@@ -751,7 +954,7 @@ function toggleQuick() {
   }
 }
 window.toggleQuick = toggleQuick;
-
+ 
 let asapActive = false;
 function toggleAsap() {
   asapActive = !asapActive;
@@ -761,10 +964,10 @@ function toggleAsap() {
   lbl.textContent = asapActive ? '✓ Marked as urgent' : 'Tap to mark urgent';
 }
 window.toggleAsap = toggleAsap;
-
+ 
 const savedRoom = localStorage.getItem('saved_room');
 if (savedRoom) document.getElementById('room-select').value = savedRoom;
-
+ 
 function prefill(text) {
   const input = document.getElementById('custom-input');
   input.value = text;
@@ -772,30 +975,30 @@ function prefill(text) {
   input.setSelectionRange(text.length, text.length);
 }
 window.prefill = prefill;
-
+ 
 function getTeacherRequestIds() {
   try { return JSON.parse(localStorage.getItem('teacher_request_ids') || '[]'); }
   catch (e) { return []; }
 }
-
+ 
 function saveTeacherRequestId(id) {
   const ids = getTeacherRequestIds().filter(x => x !== id);
   ids.unshift(id);
   localStorage.setItem('teacher_request_ids', JSON.stringify(ids.slice(0, 20)));
 }
-
+ 
 function statusLabel(req) {
   if (req.cancelled) return { key: 'cancelled', icon: '✕', title: 'Cancelled', note: 'This request was cancelled.' };
   if (req.resolved) return { key: 'resolved', icon: '✅', title: 'Resolved', note: 'Front desk marked this request as done.' };
   return { key: 'received', icon: '📨', title: 'Received', note: "We're working on your request." };
 }
-
+ 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, ch => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   }[ch]));
 }
-
+ 
 async function sendReq(msg) {
   const room = document.getElementById('room-select').value;
   try {
@@ -809,7 +1012,7 @@ async function sendReq(msg) {
     alert('Error sending request: ' + e.message);
   }
 }
-
+ 
 function sendCustom() {
   let val = document.getElementById('custom-input').value.trim();
   if (!val) return;
@@ -822,29 +1025,29 @@ function sendCustom() {
   if (btn) { btn.classList.remove('active'); lbl.textContent = 'Tap to mark urgent'; }
 }
 window.sendCustom = sendCustom;
-
+ 
 function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toast-text').textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
-
+ 
 function updateTeacherStatus(data) {
   const panel = document.getElementById('teacher-status-panel');
   const list = document.getElementById('teacher-status-list');
   if (!panel || !list) return;
-
+ 
   const ids = getTeacherRequestIds();
   const requestMap = new Map((data || []).map(r => [r.id, r]));
   const tracked = ids.map(id => requestMap.get(id)).filter(Boolean).slice(0, 3);
-
+ 
   if (tracked.length === 0) {
     panel.classList.remove('show');
     list.innerHTML = '';
     return;
   }
-
+ 
   panel.classList.add('show');
   list.innerHTML = tracked.map(req => {
     const st = statusLabel(req);
@@ -863,7 +1066,7 @@ function updateTeacherStatus(data) {
     `;
   }).join('');
 }
-
+ 
 async function cancelTeacherRequest(id, btn) {
   if (!confirm('Cancel this help request?')) return;
   if (btn) { btn.textContent = '…'; btn.disabled = true; }
@@ -876,17 +1079,17 @@ async function cancelTeacherRequest(id, btn) {
   }
 }
 window.cancelTeacherRequest = cancelTeacherRequest;
-
+ 
 document.getElementById('custom-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendCustom();
 });
-
+ 
 // ══════════════════════════════════════════════
 //  FRONT DESK: live list of requests
 // ══════════════════════════════════════════════
 let knownIds = new Set();
 let latestRequests = []; // cached snapshot, used by the reminder timer
-
+ 
 // Browser desktop notifications for when this page/tab is not active.
 // Browsers require the user to click an "Enable notifications" button once.
 function isPageInactive() {
@@ -894,7 +1097,7 @@ function isPageInactive() {
   // document.hasFocus() covers the case where another app/window is active.
   return document.hidden || !document.hasFocus();
 }
-
+ 
 function notificationSupportMessage() {
   if (!('Notification' in window)) return 'Browser notifications are not supported in this browser.';
   if (location.protocol === 'file:') return 'Notifications may be blocked from local file:// pages. Use localhost or an https website for the most reliable result.';
@@ -903,7 +1106,7 @@ function notificationSupportMessage() {
   if (Notification.permission === 'granted') return 'Notifications are enabled. Leave this tab or window, then send a request from another tab/device to test.';
   return 'Notifications are not enabled yet.';
 }
-
+ 
 function updateDesktopNotifyUI() {
   const buttons = document.querySelectorAll('.desktop-notify-btn');
   buttons.forEach(btn => {
@@ -924,30 +1127,30 @@ function updateDesktopNotifyUI() {
       btn.disabled = false;
     }
   });
-
+ 
   const status = document.getElementById('notify-status');
   if (status) status.textContent = notificationSupportMessage();
 }
-
+ 
 async function enableDesktopNotifications() {
   if (!('Notification' in window)) {
     alert('This browser does not support desktop notifications.');
     updateDesktopNotifyUI();
     return;
   }
-
+ 
   if (Notification.permission === 'denied') {
     alert('Notifications are blocked for this site. Please allow them in your browser site settings, then reload this page.');
     updateDesktopNotifyUI();
     return;
   }
-
+ 
   const permission = Notification.permission === 'granted'
     ? 'granted'
     : await Notification.requestPermission();
-
+ 
   updateDesktopNotifyUI();
-
+ 
   if (permission === 'granted') {
     showBrowserNotification(
       'School Help Desk notifications enabled',
@@ -958,12 +1161,12 @@ async function enableDesktopNotifications() {
   }
 }
 window.enableDesktopNotifications = enableDesktopNotifications;
-
+ 
 function showBrowserNotification(title, body, tag, force = false) {
   if (!('Notification' in window)) return false;
   if (Notification.permission !== 'granted') return false;
   if (!force && !isPageInactive()) return false;
-
+ 
   try {
     const n = new Notification(title, {
       body,
@@ -971,13 +1174,13 @@ function showBrowserNotification(title, body, tag, force = false) {
       requireInteraction: false,
       silent: false
     });
-
+ 
     n.onclick = () => {
       window.focus();
       switchTab('frontdesk');
       n.close();
     };
-
+ 
     setTimeout(() => n.close(), 10000);
     return true;
   } catch (e) {
@@ -985,7 +1188,7 @@ function showBrowserNotification(title, body, tag, force = false) {
     return false;
   }
 }
-
+ 
 function testDesktopNotification() {
   if (!('Notification' in window)) {
     alert('This browser does not support desktop notifications.');
@@ -1004,16 +1207,16 @@ function testDesktopNotification() {
   if (!shown) alert('The browser did not show the notification. Check OS/browser notification settings.');
 }
 window.testDesktopNotification = testDesktopNotification;
-
+ 
 window.addEventListener('focus', updateDesktopNotifyUI);
 document.addEventListener('visibilitychange', updateDesktopNotifyUI);
 updateDesktopNotifyUI();
-
+ 
 function snapshotToArray(val) {
   if (!val) return [];
   return Object.keys(val).map(id => ({ id, ...val[id] }));
 }
-
+ 
 function renderRequests(data) {
   latestRequests = data;
   updateTeacherStatus(data);
@@ -1021,22 +1224,22 @@ function renderRequests(data) {
   const list = document.getElementById('req-list');
   const empty = document.getElementById('empty-state');
   const badge = document.getElementById('pending-badge');
-
+ 
   const pending = activeData.filter(r => !r.resolved).length;
   badge.textContent = pending === 0 ? '0 pending' : `${pending} pending`;
   badge.className = 'badge' + (pending === 0 ? ' zero' : '');
-
+ 
   if (activeData.length === 0) {
     empty.style.display = 'block';
     list.querySelectorAll('.req-card').forEach(e => e.remove());
     return;
   }
   empty.style.display = 'none';
-
+ 
   list.querySelectorAll('.req-card').forEach(card => {
     if (!activeData.find(r => r.id === card.dataset.id)) card.remove();
   });
-
+ 
   activeData
     .sort((a, b) => b.created_at - a.created_at)
     .forEach(req => {
@@ -1046,7 +1249,7 @@ function renderRequests(data) {
         card = document.createElement('div');
         card.dataset.id = req.id;
       }
-
+ 
       const timeStr = new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const isUrgent = req.message.includes('URGENT') || req.message.includes('ASAP');
       const ageMin = Math.floor((Date.now() - req.created_at) / 60000);
@@ -1063,7 +1266,7 @@ function renderRequests(data) {
           ? `<button class="resolve-btn" onclick="resolveReq('${req.id}', this)">✓ Done</button>`
           : `<span class="resolve-btn done">✓ Resolved</span>`}
       `;
-
+ 
       if (isNew && !req.resolved) {
         card.classList.add('new-anim');
         if (knownIds.size > 0) {
@@ -1075,7 +1278,7 @@ function renderRequests(data) {
       list.appendChild(card);
     });
 }
-
+ 
 async function resolveReq(id, btn) {
   btn.textContent = '…';
   btn.disabled = true;
@@ -1088,10 +1291,10 @@ async function resolveReq(id, btn) {
   }
 }
 window.resolveReq = resolveReq;
-
+ 
 let reminderTimer = null;
 let requestsListenerAttached = false;
-
+ 
 function initRealtime() {
   if (!requestsListenerAttached) {
     onValue(requestsRef, (snap) => {
@@ -1102,8 +1305,9 @@ function initRealtime() {
   if (reminderTimer) clearInterval(reminderTimer);
   reminderTimer = setInterval(checkReminders, 7 * 60 * 1000);
   scheduleDailyClear();
+  initChecklistRealtime();
 }
-
+ 
 function checkReminders() {
   const pending = latestRequests.filter(r => !r.resolved && !r.cancelled).sort((a, b) => a.created_at - b.created_at);
   if (pending.length === 0) return;
@@ -1112,7 +1316,7 @@ function checkReminders() {
   showReminderNotif(pending.length, oldest, ageMin);
   playChime();
 }
-
+ 
 function showReminderNotif(count, oldest, ageMin) {
   const container = document.getElementById('notif-container');
   showBrowserNotification(
@@ -1140,7 +1344,7 @@ function showReminderNotif(count, oldest, ageMin) {
   container.appendChild(el);
   setTimeout(() => dismissNotif(el), 8000);
 }
-
+ 
 async function clearOldRequests() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1153,7 +1357,7 @@ async function clearOldRequests() {
     await update(ref(db), updates);
   }
 }
-
+ 
 async function clearResolved() {
   if (!confirm('Remove all resolved/cancelled requests from the list?')) return;
   const updates = {};
@@ -1168,7 +1372,7 @@ async function clearResolved() {
   }
 }
 window.clearResolved = clearResolved;
-
+ 
 function scheduleDailyClear() {
   clearOldRequests();
   const now = new Date();
@@ -1180,7 +1384,7 @@ function scheduleDailyClear() {
     setInterval(clearOldRequests, 24 * 60 * 60 * 1000);
   }, msUntilMidnight);
 }
-
+ 
 function iconFor(msg) {
   const m = msg.toLowerCase();
   if (m.includes('print')) return '🖨️';
@@ -1191,7 +1395,7 @@ function iconFor(msg) {
   if (m.includes('tech') || m.includes('computer')) return '💻';
   return '📋';
 }
-
+ 
 function showNotif(req) {
   const container = document.getElementById('notif-container');
   const el = document.createElement('div');
@@ -1215,14 +1419,14 @@ function showNotif(req) {
   container.appendChild(el);
   setTimeout(() => dismissNotif(el), 6000);
 }
-
+ 
 function dismissNotif(el) {
   if (!el || !el.parentNode) return;
   el.classList.add('hiding');
   setTimeout(() => el.remove(), 300);
 }
 window.dismissNotif = dismissNotif;
-
+ 
 function playChime() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1238,17 +1442,353 @@ function playChime() {
     });
   } catch(e) {}
 }
-
+ 
+// ══════════════════════════════════════════════
+//  FRONT DESK: daily checklist
+// ══════════════════════════════════════════════
+const CHECKLIST_ITEMS = [
+  { id: 'open_blinds_tv',     section: 'Opening Procedures', text: 'Roll up lobby blinds, turn on the TV, and ensure BA books/syllabus are on display.' },
+  { id: 'open_thermo_cool',   section: 'Opening Procedures', text: 'Set the thermostat to Cool.' },
+  { id: 'open_classroom',     section: 'Opening Procedures', text: 'Classroom: turn on TV and air purifier; check pencils, and refill supplies (e.g., paper) as needed.' },
+  { id: 'open_email_sub',     section: 'Opening Procedures', text: 'Scan through emails for any emergency sub requests before classes begin.' },
+ 
+  { id: 'cal_rsvp',           section: 'Calendar Events', text: 'Verify that all Consultation/Placement RSVPs have been added to the Salesforce campaign.' },
+  { id: 'cal_placement_test', section: 'Calendar Events', text: "Ensure all placement tests are prepared for today's appointment." },
+ 
+  { id: 'sf_followup',        section: 'Salesforce', text: 'Follow up with open tasks in Salesforce.' },
+  { id: 'sf_attendance',      section: 'Salesforce', text: 'Mark attendance & complete Campaign.' },
+ 
+  { id: 'front_replies',      section: 'Front', text: 'Reply to all incoming emails & voicemail messages from Zoom.' },
+ 
+  { id: 'materials_prep',     section: 'Material Preparation', text: "Prepare teachers' materials for the next day (double-sided, BLK & WHT). Staple and paperclip, and put them in the teacher's trays." },
+ 
+  { id: 'close_attendance',   section: 'End-of-Day / Closing Procedures', text: 'Ensure teachers have recorded attendance.' },
+  { id: 'close_emails',       section: 'End-of-Day / Closing Procedures', text: 'Confirm all emails have been addressed in time.' },
+  { id: 'close_lobby',        section: 'End-of-Day / Closing Procedures', text: 'Lobby: lower blinds, turn off thermostats, and TVs.' },
+  { id: 'close_classroom',    section: 'End-of-Day / Closing Procedures', text: 'Classroom: turn off TV and air purifier; collect paper clips and move left-behind items to lost-and-found.' },
+  { id: 'close_thermo_heat',  section: 'End-of-Day / Closing Procedures', text: 'Set the thermostat to Heat.' },
+  { id: 'close_breakroom',    section: 'End-of-Day / Closing Procedures', text: 'Tidy teacher break room, restock snacks/drinks.' },
+  { id: 'close_discussion',   section: 'End-of-Day / Closing Procedures', text: 'Note any unfinished work in the Front Discussion.' },
+];
+const CHECKLIST_SECTIONS = [...new Set(CHECKLIST_ITEMS.map(i => i.section))];
+const SECTION_DONE_NOTES = {
+  'Opening Procedures': '☕ Opening duties, brewed to perfection!',
+  'Calendar Events': '📅 Today\'s all mapped out!',
+  'Salesforce': '💼 Salesforce, sorted!',
+  'Front': '📬 Inbox: conquered!',
+  'Material Preparation': '📚 Tomorrow\'s all set to go!',
+  'End-of-Day / Closing Procedures': '🔒 Locked up and ready for tomorrow!',
+};
+const DEFAULT_SECTION_DONE_NOTE = '✨ Section complete — nice work!';
+const ASSIGNEE_OPTIONS = [
+  { code: 'SY', label: 'SY', color: '#ffaee1' },
+  { code: 'SS', label: 'SS', color: '#82c0cc' },
+  { code: 'YL', label: 'YL', color: '#9ddaff' },
+  { code: 'no_need', label: 'No need', color: '#c9c8c2' },
+];
+ 
+// All checklist day-keys and end-of-day timing are anchored to
+// America/Los_Angeles (California), regardless of the device's own timezone.
+function pacificNow() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+}
+ 
+function todayKey() {
+  const d = pacificNow();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+ 
+let checklistState = {};
+let checklistListenerAttached = false;
+let checklistDateShown = '';
+let openAssigneeDropdownId = null;
+let quickAssignCode = null;
+let eodWarnTimer = null;
+ 
+function checklistRefForToday() {
+  return ref(db, 'checklist/' + todayKey());
+}
+ 
+function renderQuickAssignBar() {
+  const bar = document.getElementById('quick-assign-bar');
+  if (!bar) return;
+  const activeOpt = ASSIGNEE_OPTIONS.find(o => o.code === quickAssignCode);
+  bar.innerHTML = `
+    <span class="quick-assign-label">Quick assign:</span>
+    <div class="quick-assign-btns">
+      ${ASSIGNEE_OPTIONS.map(opt => `
+        <button type="button" class="quick-assign-btn ${quickAssignCode === opt.code ? 'active' : ''}"
+          style="--qa-color:${opt.color}" onclick="setQuickAssign('${opt.code}')">${escapeHtml(opt.label)}</button>
+      `).join('')}
+      ${quickAssignCode ? `<button type="button" class="quick-assign-exit" onclick="setQuickAssign(null)">✕ Done</button>` : ''}
+    </div>
+    ${activeOpt ? `<div class="quick-assign-hint">Tap tasks below to mark ${escapeHtml(activeOpt.label)} — click again to undo.</div>` : ''}
+  `;
+}
+ 
+function setQuickAssign(code) {
+  quickAssignCode = (quickAssignCode === code) ? null : code;
+  renderQuickAssignBar();
+  renderChecklist();
+}
+window.setQuickAssign = setQuickAssign;
+ 
+function onChecklistItemRowClick(id) {
+  if (!quickAssignCode) return;
+  applyAssigneeToggle(id, quickAssignCode);
+}
+window.onChecklistItemRowClick = onChecklistItemRowClick;
+ 
+function renderChecklist() {
+  const container = document.getElementById('checklist-sections');
+  if (!container) return;
+  renderQuickAssignBar();
+ 
+  container.innerHTML = CHECKLIST_SECTIONS.map(section => {
+    const items = CHECKLIST_ITEMS.filter(i => i.section === section);
+    const sectionDone = items.every(i => {
+      const sel = checklistState[i.id];
+      return Array.isArray(sel) && sel.length > 0;
+    });
+    const doneNote = SECTION_DONE_NOTES[section] || DEFAULT_SECTION_DONE_NOTE;
+    return `
+      <div class="checklist-section">
+        <div class="checklist-section-title-row">
+          <div class="checklist-section-title">${escapeHtml(section)}</div>
+          ${sectionDone ? `<span class="checklist-section-note">${escapeHtml(doneNote)}</span>` : ''}
+        </div>
+        <div class="checklist-items">
+          ${items.map(item => {
+            const sel = Array.isArray(checklistState[item.id]) ? checklistState[item.id] : [];
+            const hasSelection = sel.length > 0;
+            const isOpen = openAssigneeDropdownId === item.id;
+            return `
+              <div class="checklist-item ${hasSelection ? 'checked' : ''} ${quickAssignCode ? 'quick-target' : ''}" onclick="onChecklistItemRowClick('${item.id}')">
+                <div class="checklist-item-text">${escapeHtml(item.text)}</div>
+                <div class="assignee-select">
+                  <button type="button" class="assignee-trigger" onclick="toggleAssigneeDropdown(event, '${item.id}')">
+                    <span class="assignee-chip-row">${assigneeChipsHtml(sel)}</span>
+                    <span class="assignee-caret">▾</span>
+                  </button>
+                  <div class="assignee-dropdown" id="dd-${item.id}" style="display:${isOpen ? 'flex' : 'none'}">
+                    ${ASSIGNEE_OPTIONS.map(opt => `
+                      <label class="assignee-option" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${sel.includes(opt.code) ? 'checked' : ''}
+                          onclick="onAssigneeOptionClick(event, '${item.id}', '${opt.code}')" />
+                        <span class="assignee-dot" style="background:${opt.color}"></span>
+                        ${escapeHtml(opt.label)}
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+ 
+  const doneCount = CHECKLIST_ITEMS.filter(i => {
+    const sel = checklistState[i.id];
+    return Array.isArray(sel) && sel.length > 0;
+  }).length;
+  const totalCount = CHECKLIST_ITEMS.length;
+  const badge = document.getElementById('checklist-progress-badge');
+  if (badge) {
+    badge.textContent = `${doneCount}/${totalCount} done`;
+    badge.classList.toggle('done', doneCount === totalCount);
+  }
+ 
+  const dateLabel = document.getElementById('checklist-date-label');
+  if (dateLabel) {
+    const pacificDate = pacificNow();
+    dateLabel.textContent = pacificDate.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+  }
+}
+ 
+function initChecklistRealtime() {
+  const key = todayKey();
+  if (checklistListenerAttached && checklistDateShown === key) return;
+  checklistDateShown = key;
+  onValue(checklistRefForToday(), (snap) => {
+    checklistState = snap.val() || {};
+    renderChecklist();
+    maybeShowEndOfDayWarning();
+  });
+  checklistListenerAttached = true;
+ 
+  // Re-check at Pacific midnight so the panel rolls over to a fresh day automatically.
+  const now = pacificNow();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  setTimeout(() => {
+    checklistListenerAttached = false;
+    initChecklistRealtime();
+  }, midnight - now + 1000);
+ 
+  // Check every minute for the 8:05 PM Pacific end-of-day nudge while this page is open.
+  if (eodWarnTimer) clearInterval(eodWarnTimer);
+  eodWarnTimer = setInterval(maybeShowEndOfDayWarning, 60 * 1000);
+}
+ 
+function assigneeChipsHtml(sel) {
+  if (!sel || sel.length === 0) return `<span class="assignee-placeholder">Assign</span>`;
+  return sel.map(code => {
+    const opt = ASSIGNEE_OPTIONS.find(o => o.code === code);
+    if (!opt) return '';
+    const isNoNeed = code === 'no_need';
+    return `<span class="assignee-pill${isNoNeed ? ' no-need' : ''}" style="background:${opt.color}">${escapeHtml(opt.label)}</span>`;
+  }).join('');
+}
+ 
+function toggleAssigneeDropdown(event, id) {
+  event.stopPropagation();
+  openAssigneeDropdownId = (openAssigneeDropdownId === id) ? null : id;
+  renderChecklist();
+}
+window.toggleAssigneeDropdown = toggleAssigneeDropdown;
+ 
+async function applyAssigneeToggle(id, code) {
+  const current = new Set(Array.isArray(checklistState[id]) ? checklistState[id] : []);
+ 
+  if (code === 'no_need') {
+    // "No need" is exclusive — picking it clears any names, and vice versa.
+    if (current.has('no_need')) current.delete('no_need');
+    else { current.clear(); current.add('no_need'); }
+  } else {
+    current.delete('no_need');
+    if (current.has(code)) current.delete(code);
+    else current.add(code);
+  }
+ 
+  const arr = Array.from(current);
+  checklistState = { ...checklistState, [id]: arr }; // optimistic UI
+  renderChecklist();
+  try {
+    await update(checklistRefForToday(), { [id]: arr });
+  } catch (e) {
+    alert('Error saving checklist: ' + e.message);
+  }
+}
+ 
+async function onAssigneeOptionClick(event, id, code) {
+  event.stopPropagation();
+  await applyAssigneeToggle(id, code);
+}
+window.onAssigneeOptionClick = onAssigneeOptionClick;
+ 
+// Close any open assignee dropdown when clicking outside of it.
+document.addEventListener('click', (e) => {
+  if (openAssigneeDropdownId && !e.target.closest('.assignee-select')) {
+    openAssigneeDropdownId = null;
+    renderChecklist();
+  }
+});
+ 
+async function resetChecklist() {
+  if (!confirm("Reset today's checklist? This will clear every selection for everyone.")) return;
+  try {
+    await set(checklistRefForToday(), {});
+    localStorage.removeItem(checklistWarnedKey());
+  } catch (e) {
+    alert('Error resetting checklist: ' + e.message);
+  }
+}
+window.resetChecklist = resetChecklist;
+ 
+function toggleChecklist() {
+  const panel = document.getElementById('checklist-panel');
+  const chevron = document.getElementById('checklist-chevron');
+  panel.classList.toggle('open');
+  chevron.classList.toggle('open', panel.classList.contains('open'));
+}
+window.toggleChecklist = toggleChecklist;
+ 
+// ══════════════════════════════════════════════
+//  FRONT DESK: 8:05 PM Pacific end-of-day nudge
+// ══════════════════════════════════════════════
+function checklistWarnedKey() {
+  return 'checklist_warned_' + todayKey();
+}
+ 
+function isPastEndOfDayTime() {
+  const d = pacificNow();
+  return d.getHours() > 20 || (d.getHours() === 20 && d.getMinutes() >= 5);
+}
+ 
+function getIncompleteChecklistItems() {
+  return CHECKLIST_ITEMS.filter(i => {
+    const sel = checklistState[i.id];
+    return !Array.isArray(sel) || sel.length === 0;
+  });
+}
+ 
+function maybeShowEndOfDayWarning() {
+  if (!isPastEndOfDayTime()) return;
+  if (localStorage.getItem(checklistWarnedKey())) return;
+ 
+  const incomplete = getIncompleteChecklistItems();
+  if (incomplete.length === 0) return;
+ 
+  localStorage.setItem(checklistWarnedKey(), '1');
+  showEndOfDayWarningPopup(incomplete);
+}
+ 
+function showEndOfDayWarningPopup(incomplete) {
+  const firstNames = incomplete.slice(0, 3).map(i => i.text).join('; ');
+  const more = incomplete.length > 3 ? ` (+${incomplete.length - 3} more)` : '';
+  const summary = `${firstNames}${more}`;
+ 
+  showBrowserNotification(
+    `Looks like ${incomplete.length} checklist item${incomplete.length > 1 ? 's are' : ' is'} still unchecked today`,
+    summary,
+    'helpdesk-eod-warning',
+    true
+  );
+ 
+  const container = document.getElementById('notif-container');
+  const el = document.createElement('div');
+  el.className = 'notif-popup eod-warning-popup';
+  el.innerHTML = `
+    <div class="notif-icon">⚠️</div>
+    <div class="notif-body">
+      <div class="notif-title">Looks like there's something unchecked for today</div>
+      <div class="notif-msg">${escapeHtml(summary)}</div>
+      <div class="notif-time">Want to check it now?</div>
+    </div>
+    <button class="notif-close" onclick="dismissNotif(this.closest('.notif-popup'))">✕</button>
+  `;
+  el.addEventListener('click', (e) => {
+    if (e.target.classList.contains('notif-close')) return;
+    switchTab('frontdesk');
+    const panel = document.getElementById('checklist-panel');
+    const chevron = document.getElementById('checklist-chevron');
+    if (panel && !panel.classList.contains('open')) {
+      panel.classList.add('open');
+      chevron.classList.add('open');
+    }
+    panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    dismissNotif(el);
+  });
+  container.appendChild(el);
+  // Give this one more time on screen than the routine notifications, since it needs a decision.
+  setTimeout(() => dismissNotif(el), 15000);
+}
+ 
 // ══════════════════════════════════════════════
 //  PIN LOGIC (unchanged — still uses localStorage,
 //  this is per-device UI lock, not database auth)
 // ══════════════════════════════════════════════
 let pinEntry = '';
 let settingsPinUnlocked = false;
-
+ 
 function getStoredPin() { return localStorage.getItem('settings_pin') || ''; }
 function getFdPin() { return localStorage.getItem('frontdesk_pin') || ''; }
-
+ 
 const FD_UNLOCK_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
 function getFdUnlockUntil() { return Number(localStorage.getItem('frontdesk_unlocked_until') || 0); }
 function isFdUnlockActive() { return Date.now() < getFdUnlockUntil(); }
@@ -1256,14 +1796,14 @@ function rememberFdUnlock() {
   localStorage.setItem('frontdesk_unlocked_until', String(Date.now() + FD_UNLOCK_DURATION_MS));
 }
 function clearFdUnlock() { localStorage.removeItem('frontdesk_unlocked_until'); }
-
+ 
 let fdPinEntry = '';
 let fdPinUnlocked = false;
-
+ 
 function initFdPinOverlay() {
   const pin = getFdPin();
   const overlay = document.getElementById('fd-pin-overlay');
-
+ 
   // If no PIN exists, or this browser/device unlocked Front Desk within
   // the last 8 hours, do not ask for the PIN again.
   if (!pin || isFdUnlockActive()) {
@@ -1278,7 +1818,7 @@ function initFdPinOverlay() {
     setTimeout(() => { const i = document.getElementById('fd-ghost-input'); if(i) i.focus(); }, 100);
   }
 }
-
+ 
 function updateDots(containerId, count) {
   const prefix = containerId === 'pin-dots' ? 'pd' : containerId === 'fd-pin-dots' ? 'fdpd' : 'spd';
   for (let i = 0; i < 4; i++) {
@@ -1286,7 +1826,7 @@ function updateDots(containerId, count) {
     if (dot) dot.classList.toggle('filled', i < count);
   }
 }
-
+ 
 function fdPinPress(val) {
   const dots = document.getElementById('fd-pin-dots');
   if (val === 'clear') { fdPinEntry = ''; updateDots('fd-pin-dots', 0); return; }
@@ -1315,7 +1855,7 @@ function fdPinPress(val) {
   }
 }
 window.fdPinPress = fdPinPress;
-
+ 
 function initPinOverlay() {
   const pin = getStoredPin();
   const overlay = document.getElementById('pin-overlay');
@@ -1329,7 +1869,7 @@ function initPinOverlay() {
   }
   updatePinMgmtUI();
 }
-
+ 
 function updatePinMgmtUI() {
   const pin = getStoredPin();
   const display = document.getElementById('current-pin-display');
@@ -1343,7 +1883,7 @@ function updatePinMgmtUI() {
     display.style.display = 'none';
     removeBtn.style.display = 'none';
   }
-
+ 
   const fdPin = getFdPin();
   const fdDisplay = document.getElementById('fd-pin-display');
   const fdRemoveBtn = document.getElementById('remove-fd-pin-btn');
@@ -1357,7 +1897,7 @@ function updatePinMgmtUI() {
     fdRemoveBtn.style.display = 'none';
   }
 }
-
+ 
 function pinPress(val) {
   const dots = document.getElementById('pin-dots');
   if (val === 'clear') { pinEntry = ''; updateDots('pin-dots', 0); return; }
@@ -1384,12 +1924,12 @@ function pinPress(val) {
   }
 }
 window.pinPress = pinPress;
-
+ 
 let setPinEntry = '';
 let setPinStep = 'choose';
 let setPinFirst = '';
 let setPinTarget = 'settings';
-
+ 
 function openSetPin(target) {
   setPinTarget = target || 'settings';
   setPinEntry = ''; setPinStep = 'choose'; setPinFirst = '';
@@ -1399,13 +1939,13 @@ function openSetPin(target) {
   document.getElementById('set-pin-overlay').classList.remove('hidden');
 }
 window.openSetPin = openSetPin;
-
+ 
 function cancelSetPin() {
   document.getElementById('set-pin-overlay').classList.add('hidden');
   setPinEntry = '';
 }
 window.cancelSetPin = cancelSetPin;
-
+ 
 function setPinPress(val) {
   if (val === 'clear') { setPinEntry = ''; updateDots('set-pin-dots', 0); return; }
   if (val === 'back') { setPinEntry = setPinEntry.slice(0, -1); updateDots('set-pin-dots', setPinEntry.length); return; }
@@ -1444,7 +1984,7 @@ function setPinPress(val) {
   }
 }
 window.setPinPress = setPinPress;
-
+ 
 function removePin(target) {
   const label = target === 'frontdesk' ? 'Front Desk' : 'Settings';
   if (!confirm('Remove the ' + label + ' PIN? Anyone will be able to open it.')) return;
@@ -1454,7 +1994,7 @@ function removePin(target) {
   updatePinMgmtUI();
 }
 window.removePin = removePin;
-
+ 
 function ghostInput(el, screen) {
   const digits = el.value.replace(/\D/g, '');
   el.value = digits;
@@ -1475,7 +2015,7 @@ function ghostInput(el, screen) {
   }
 }
 window.ghostInput = ghostInput;
-
+ 
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Backspace') return;
   const fd = document.getElementById('fd-ghost-input');
@@ -1483,17 +2023,17 @@ document.addEventListener('keydown', function(e) {
   if (document.activeElement === fd) { fdPinPress('back'); fd.value = fdPinEntry; }
   else if (document.activeElement === st) { pinPress('back'); st.value = pinEntry; }
 }, false);
-
+ 
 // Restore Front Desk after reload if it was the last open page.
 // If it was unlocked within the last 8 hours, it opens without asking for the PIN.
 if (localStorage.getItem('last_tab') === 'frontdesk') {
   switchTab('frontdesk');
 }
-
+ 
 // Start listening immediately so desktop notifications work even if the Front Desk tab
 // has not been opened yet in this browser session.
 initRealtime();
-
+ 
 </script>
 </body>
 </html>
