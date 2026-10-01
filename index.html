@@ -602,7 +602,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   lsSet('last_tab', tab);
-  if (tab !== 'settings') settingsPinUnlocked = false;
+  if (tab !== 'settings') { settingsPinUnlocked = false; ownerUnlocked = false; }
   if (tab !== 'frontdesk') fdPinEntry = '';
   document.getElementById('view-' + tab).classList.add('active');
   if (tab === 'frontdesk') initFdPinOverlay();
@@ -1150,7 +1150,60 @@ const E = {
 };
 window.E = E;
 
-function renderSettingsEditor() {
+// ══════════════════════════════════════════════
+//  OWNER LOCK for the Workspace section
+// ══════════════════════════════════════════════
+const OWNER_PIN_HASH = 'PASTE_YOUR_HASH_HERE';
+let ownerUnlocked = false;
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+window.unlockWorkspace = async function () {
+  const input = document.getElementById('owner-pin-input');
+  if ((await sha256(input.value.trim())) === OWNER_PIN_HASH) {
+    ownerUnlocked = true;
+    renderSettingsEditor();
+  } else {
+    input.value = '';
+    input.placeholder = 'Wrong PIN — try again';
+  }
+};
+window.lockWorkspace = () => { ownerUnlocked = false; renderSettingsEditor(); };
+
+function workspaceCard(link) {
+  if (!ownerUnlocked) return `
+  <div class="settings-card">
+    <h3>🌐 Workspace 🔒</h3>
+    <p>This section is locked. Enter the owner PIN to manage desks.</p>
+    <div class="ed-row">
+      <input class="ed-input" id="owner-pin-input" type="password" autocomplete="off"
+             placeholder="Owner PIN" onkeydown="if(event.key==='Enter') unlockWorkspace()" />
+      <button class="ghost-btn" onclick="unlockWorkspace()">Unlock</button>
+    </div>
+  </div>`;
+  return `
+  <div class="settings-card">
+    <h3>🌐 Workspace</h3>
+    <p>You're on the <strong>${esc(DESK)}</strong> desk. Each desk has its own requests, checklist, and settings. Nothing is shared between desks.</p>
+    <div class="copy-link">${esc(link)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="ghost-btn" onclick="navigator.clipboard.writeText('${esc(link)}').then(()=>alert('Link copied. Share it with your team.'))">Copy team link</button>
+    </div>
+    <label class="field-label">Switch to or create another desk</label>
+    <div class="ed-row">
+      <input class="ed-input" id="desk-switch" placeholder="e.g. yourschool-location (letters, numbers, dashes)" />
+      <button class="ghost-btn" onclick="switchDesk()">Go</button>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="ghost-btn danger" onclick="E.resetDefaults()">Restore original defaults</button>
+      <button class="ghost-btn" onclick="lockWorkspace()">🔒 Lock</button>
+    </div>
+  </div>`;
+}
+ 
+ function renderSettingsEditor() {
   const host = document.getElementById('cfg-editor');
   if (!draft || !host) return;
   const d = draft;
@@ -1229,20 +1282,7 @@ function renderSettingsEditor() {
     <button class="ed-add" onclick="E.addPerson()">+ Add person</button>
   </div>
 
-  <div class="settings-card">
-    <h3>🌐 Workspace</h3>
-    <p>You're on the <strong>${esc(DESK)}</strong> desk. Each desk has its own requests, checklist, and settings. Nothing is shared between desks.</p>
-    <div class="copy-link">${esc(link)}</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-      <button class="ghost-btn" onclick="navigator.clipboard.writeText('${esc(link)}').then(()=>alert('Link copied. Share it with your team.'))">Copy team link</button>
-    </div>
-    <label class="field-label">Switch to or create another desk</label>
-    <div class="ed-row">
-      <input class="ed-input" id="desk-switch" placeholder="e.g. yourschool-location (letters, numbers, dashes)" />
-      <button class="ghost-btn" onclick="switchDesk()">Go</button>
-    </div>
-    <div style="margin-top:14px"><button class="ghost-btn danger" onclick="E.resetDefaults()">Restore original defaults</button></div>
-  </div>`;
+  ${workspaceCard(link)}`;
 }
 
 function switchDesk() {
